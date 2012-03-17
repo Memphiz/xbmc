@@ -97,7 +97,7 @@ bool CGUIDialog::OnMessage(CGUIMessage& message)
   case GUI_MSG_WINDOW_INIT:
     {
       CGUIWindow::OnMessage(message);
-      m_showStartTime = CTimeUtils::GetFrameTime();
+      m_autoCloseTime.Set(m_showDuration);
       return true;
     }
   }
@@ -226,7 +226,7 @@ void CGUIDialog::Show()
 
 void CGUIDialog::FrameMove()
 {
-  if (m_autoClosing && m_showStartTime + m_showDuration < CTimeUtils::GetFrameTime() && !m_closing)
+  if (m_autoClosing && m_autoCloseTime.IsTimePast() && !m_closing)
     Close();
   CGUIWindow::FrameMove();
 }
@@ -250,7 +250,7 @@ void CGUIDialog::SetAutoClose(unsigned int timeoutMs)
    m_autoClosing = true;
    m_showDuration = timeoutMs;
    if (m_active)
-     m_showStartTime = CTimeUtils::GetFrameTime();
+     m_autoCloseTime.Set(m_showDuration);
 }
 
 
