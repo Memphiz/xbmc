@@ -28,7 +28,6 @@
 
 #include "GUIWindow.h"
 #include "Key.h"
-#include "threads/SystemClock.h"
 
 /*!
  \ingroup winmsg
@@ -73,6 +72,6 @@ protected:
   bool m_bModal;
   bool m_autoClosing;
   bool m_enableSound;
-  XbmcThreads::EndTime m_autoCloseTime;
+  unsigned int m_showStartTime;
   unsigned int m_showDuration;
 };
