@@ -1,0 +1,9 @@
+WORKSPACE=${WORKSPACE:-$( cd $(dirname $0)/../../.. ; pwd -P )}
+XBMC_PLATFORM_DIR=atv2
+. $WORKSPACE/tools/buildsteps/defaultenv
+
+#ensure that dpkg tools are used from our toolchain
+export PATH=$XBMC_DEPENDS_ROOT/buildtools-native/bin/:$PATH
+
+cd $WORKSPACE/tools/darwin/packaging/xbmc-atv2/;./mkdeb-xbmc-atv2.sh $Configuration
+
