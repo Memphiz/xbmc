@@ -170,7 +170,7 @@ if __name__=="__main__":
         exit(0)
 
     if (badDirectRendering()):
-        error("XBMC needs hardware accelerated OpenGL rendering.\nInstall an appropriate graphics driver.\n\nPlease consult XBMC Wiki for supported hardware\nhttp://wiki.xbmc.org/?title=Supported_hardware")
+        error("Kodi needs hardware accelerated OpenGL rendering.\nInstall an appropriate graphics driver.\n\nPlease consult XBMC Wiki for supported hardware\nhttp://wiki.kodi.org/?title=Supported_hardware")
 
     if (badColorDepth()):
-        error("XBMC cannot run unless the\nscreen color depth is atleast 24 bit.\n\nPlease reconfigure your screen.")
+        error("Kodi cannot run unless the\nscreen color depth is atleast 24 bit.\n\nPlease reconfigure your screen.")
