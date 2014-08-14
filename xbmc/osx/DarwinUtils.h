@@ -43,7 +43,7 @@ extern "C"
   const char *GetOSXVersionString(void); 
   int         GetDarwinFrameworkPath(bool forPython, char* path, uint32_t *pathsize);
   int         GetDarwinExecutablePath(char* path, uint32_t *pathsize);
-  const char *DarwinGetXbmcRootFolder(void);
+  const char *DarwinGetAppRootFolder(void);
   bool        DarwinIsIosSandboxed(void);
   bool        DarwinHasVideoToolboxDecoder(void);
   int         DarwinBatteryLevel(void);
