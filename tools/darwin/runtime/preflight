@@ -205,6 +205,7 @@ if (needs_kodi_migration()) {
 #when we are here - we mark this userdata as migrated! (in case someone first installs
 #Kodi and then XBMC we don't want it to migrate a fresh XBMC into the already
 #used Kodi folder.
+my $apphome = get_app_home();
 `touch -f "$apphome/.kodi_migration_complete"`;
 
 if (first_app_run()) {
