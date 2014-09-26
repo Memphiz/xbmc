@@ -71,6 +71,7 @@
 #include "android/jni/Cursor.h"
 #include "android/jni/ContentResolver.h"
 #include "android/jni/MediaStore.h"
+#include "CompileInfo.h"
 
 #define GIGABYTES       1073741824
 
@@ -93,7 +94,7 @@ std::vector<androidPackage> CXBMCApp::m_applications;
 
 CXBMCApp::CXBMCApp(ANativeActivity* nativeActivity)
   : CJNIContext(nativeActivity)
-  , CJNIBroadcastReceiver("org/xbmc/xbmc/XBMCBroadcastReceiver")
+  , CJNIBroadcastReceiver("org.xbmc.kodi/XBMCBroadcastReceiver")
   , m_wakeLock(NULL)
 {
   m_activity = nativeActivity;
@@ -251,7 +252,10 @@ bool CXBMCApp::getWakeLock()
   if (m_wakeLock)
     return true;
 
-  m_wakeLock = new CJNIWakeLock(CJNIPowerManager(getSystemService("power")).newWakeLock("org.xbmc.xbmc"));
+  std::string appName = CCompileInfo::GetAppName();
+  StringUtils::ToLower(appName);
+  std::string className = "org.xbmc." + appName;
+  m_wakeLock = new CJNIWakeLock(CJNIPowerManager(getSystemService("power")).newWakeLock(className.c_str()));
 
   return true;
 }
@@ -606,6 +610,10 @@ void CXBMCApp::SetupEnv()
   setenv("XBMC_ANDROID_LIBS", getApplicationInfo().nativeLibraryDir.c_str(), 0);
   setenv("XBMC_ANDROID_APK", getPackageResourcePath().c_str(), 0);
 
+  std::string appName = CCompileInfo::GetAppName();
+  StringUtils::ToLower(appName);
+  std::string className = "org.xbmc." + appName;
+
   std::string xbmcHome = CJNISystem::getProperty("xbmc.home", "");
   if (xbmcHome.empty())
   {
@@ -624,7 +632,7 @@ void CXBMCApp::SetupEnv()
   {
     CJNIFile androidPath = getExternalFilesDir("");
     if (!androidPath)
-      androidPath = getDir("org.xbmc.xbmc", 1);
+      androidPath = getDir(className.c_str(), 1);
 
     if (androidPath)
       externalDir = androidPath.getAbsolutePath();
