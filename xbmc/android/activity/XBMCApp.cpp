@@ -270,7 +270,8 @@ void CXBMCApp::run()
   m_initialVolume = GetSystemVolume();
 
   CJNIIntent startIntent = getIntent();
-  android_printf("XBMC Started with action: %s\n",startIntent.getAction().c_str());
+
+  android_printf("%s Started with action: %s\n", CCompileInfo::GetAppName(), startIntent.getAction().c_str());
 
   std::string filenameToPlay = GetFilenameFromIntent(startIntent);
   if (!filenameToPlay.empty())
@@ -278,7 +279,7 @@ void CXBMCApp::run()
     int argc = 2;
     const char** argv = (const char**) malloc(argc*sizeof(char*));
 
-    std::string exe_name("XBMC");
+    std::string exe_name(CCompileInfo::GetAppName());
     argv[0] = exe_name.c_str();
     argv[1] = filenameToPlay.c_str();
 
