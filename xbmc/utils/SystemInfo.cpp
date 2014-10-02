@@ -1074,7 +1074,8 @@ std::string CSysInfo::GetUserAgent()
   if (!result.empty())
     return result;
 
-  result = "XBMC/" + g_infoManager.GetLabel(SYSTEM_BUILD_VERSION_SHORT) + " (";
+  result = g_infoManager.GetAppName();
+  result += "/" + g_infoManager.GetLabel(SYSTEM_BUILD_VERSION_SHORT) + " (";
 #if defined(TARGET_WINDOWS)
   result += GetKernelName() + " " + GetKernelVersion();
   BOOL bIsWow = FALSE;
