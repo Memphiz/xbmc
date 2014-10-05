@@ -170,7 +170,7 @@ if __name__=="__main__":
         exit(0)
 
     if (badDirectRendering()):
-        error("Kodi needs hardware accelerated OpenGL rendering.\nInstall an appropriate graphics driver.\n\nPlease consult XBMC Wiki for supported hardware\nhttp://wiki.kodi.org/?title=Supported_hardware")
+        error("Kodi needs hardware accelerated OpenGL rendering.\nInstall an appropriate graphics driver.\n\nPlease consult Kodi Wiki for supported hardware\nhttp://wiki.kodi.tv/?title=Supported_hardware")
 
     if (badColorDepth()):
         error("Kodi cannot run unless the\nscreen color depth is atleast 24 bit.\n\nPlease reconfigure your screen.")
