@@ -200,6 +200,7 @@ sub migrate_to_kodi() {
 
 if (needs_kodi_migration()) {
     migrate_to_kodi();
+    `touch -f "$apphome/.kodi_data_was_migrated"`;
 }
 
 #when we are here - we mark this userdata as migrated! (in case someone first installs
