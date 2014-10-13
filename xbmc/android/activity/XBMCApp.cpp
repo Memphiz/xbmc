@@ -94,7 +94,7 @@ std::vector<androidPackage> CXBMCApp::m_applications;
 
 CXBMCApp::CXBMCApp(ANativeActivity* nativeActivity)
   : CJNIContext(nativeActivity)
-  , CJNIBroadcastReceiver("org.xbmc.kodi/XBMCBroadcastReceiver")
+  , CJNIBroadcastReceiver("org/xbmc/kodi/XBMCBroadcastReceiver")
   , m_wakeLock(NULL)
 {
   m_activity = nativeActivity;
