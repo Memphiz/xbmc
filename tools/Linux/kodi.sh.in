@@ -43,14 +43,29 @@ do
     esac
 done
 
+function needs_kodi_migration ()
+{
+  #check if there is an old XBMC folder to migrate
+  if [ -f "${HOME}/.xbmc/userdata/guisettings.xml" ] && [ ! -f "${USERDATA_DIR}/.kodi_migration_complete" ]; then
+    return "1";
+  else
+    return "0";
+  fi
+}
+
 migrate_home()
 {
   [ "$(basename $0)" = "xbmc" ] && echo "WARNING: running ${bin_name} as "xbmc" is deprecated and will be removed in later versions, please switch to using the ${bin_name} binary"
 
-  if [ ! -d $USERDATA_DIR ] && [ -d ${HOME}/.xbmc ]; then
+  #check if data migration is needed
+  needs_kodi_migration
+  NEEDS_MIGRATION=$?
+  if [ "$NEEDS_MIGRATION" == "1"  ]; then
       echo "INFO: migrating userdata folder. Renaming ${HOME}/.xbmc to $USERDATA_DIR"
       mv ${HOME}/.xbmc $USERDATA_DIR
+      touch ${USERDATA_DIR}/.kodi_data_was_migrated
   fi
+  touch ${USERDATA_DIR}/.kodi_migration_complete
 }
 
 command_exists()
