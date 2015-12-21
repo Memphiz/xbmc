@@ -167,7 +167,7 @@ if test "@platform_os@" = "ios"; then
   fi
 
   # tweaks for libmpeg2
-  if test "${PACKAGE_NAME}" = "libmpeg2" ; then
+  if test "${PACKAGE_NAME}" = "libmpeg2" && test "@use_cpu@" != "arm64" ; then
     export LDFLAGS="${LDFLAGS} -Wl,-read_only_relocs,suppress"
   fi
 fi

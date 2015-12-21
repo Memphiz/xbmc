@@ -25,7 +25,11 @@ $(PLATFORM): $(TARBALLS_LOCATION)/$(ARCHIVE) $(DEPS)
 	cd $(PLATFORM); $(ARCHIVE_TOOL) $(ARCHIVE_TOOL_FLAGS) $(TARBALLS_LOCATION)/$(ARCHIVE)
 ifeq ($(OS),ios)
 	cd $(PLATFORM); patch -p1 < ../01-libmpeg2-add-asm-leading-underscores.patch
+ifeq ($(CPU),arm64)
+	cd $(PLATFORM); patch -p1 < ../02-neon-arm64.patch
+else
 	cd $(PLATFORM); patch -p0 < ../02-neon.patch
+endif
 	cd $(PLATFORM); patch -p1 < ../03-config-fix.patch
 endif
 	cd $(PLATFORM); patch -p1 < ../04-clang-fix.patch
