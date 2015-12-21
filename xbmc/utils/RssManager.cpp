@@ -107,8 +107,6 @@ bool CRssManager::Load()
 {
   CSingleLock lock(m_critical);
   std::string rssXML = CProfilesManager::GetInstance().GetUserDataItem("RssFeeds.xml");
-  if (!CFile::Exists(rssXML))
-    return false;
 
   CXBMCTinyXML rssDoc;
   if (!rssDoc.LoadFile(rssXML))

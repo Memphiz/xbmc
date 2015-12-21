@@ -415,11 +415,6 @@ bool CAdvancedSettings::Load()
 void CAdvancedSettings::ParseSettingsFile(const std::string &file)
 {
   CXBMCTinyXML advancedXML;
-  if (!CFile::Exists(file))
-  {
-    CLog::Log(LOGNOTICE, "No settings file to load (%s)", file.c_str());
-    return;
-  }
 
   if (!advancedXML.LoadFile(file))
   {

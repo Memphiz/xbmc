@@ -471,7 +471,7 @@ bool CSettings::Load(const std::string &file)
 {
   CXBMCTinyXML xmlDoc;
   bool updated = false;
-  if (!XFILE::CFile::Exists(file) || !xmlDoc.LoadFile(file) ||
+  if (!xmlDoc.LoadFile(file) ||
       !m_settingsManager->Load(xmlDoc.RootElement(), updated))
   {
     CLog::Log(LOGERROR, "CSettings: unable to load settings from %s, creating new default settings", file.c_str());
@@ -1220,9 +1220,9 @@ void CSettings::InitializeISettingCallbacks()
 bool CSettings::Reset()
 {
   std::string settingsFile = CProfilesManager::GetInstance().GetSettingsFile();
-  // try to delete the settings file
-  if (XFILE::CFile::Exists(settingsFile, false) && !XFILE::CFile::Delete(settingsFile))
-    CLog::Log(LOGWARNING, "Unable to delete old settings file at %s", settingsFile.c_str());
+
+  CXBMCTinyXML xmlDoc;
+  xmlDoc.DeleteFile(settingsFile);
   
   // unload any loaded settings
   Unload();
