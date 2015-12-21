@@ -9,7 +9,7 @@
   public domain.
 */
 
-#if !defined(__arm__)
+#if !defined(__arm__) && !defined(__arm64__)
 
 #import <Cocoa/Cocoa.h>
 
