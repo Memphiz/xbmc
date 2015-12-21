@@ -610,6 +610,8 @@ std::string CSysInfo::GetOsName(bool emptyIfUnknown /* = false*/)
     osName = GetKernelName() + "-based OS";
 #elif defined(TARGET_FREEBSD)
     osName = GetKernelName(true); // FIXME: for FreeBSD OS name is a kernel name
+#elif defined(TARGET_DARWIN_TVOS)
+    osName = "TVOS";
 #elif defined(TARGET_DARWIN_IOS)
     osName = "iOS";
 #elif defined(TARGET_DARWIN_OSX)
@@ -1122,7 +1124,9 @@ std::string CSysInfo::GetUserAgent()
       && iOSVerison.find_first_not_of('0', lastDotPos + 1) == std::string::npos)
     iOSVerison.erase(lastDotPos);
   StringUtils::Replace(iOSVerison, '.', '_');
-  if (iDev == "iPad" || iDev == "AppleTV")
+  if (iDev == "AppleTV4")
+    result += "CPU TVOS ";
+  else if (iDev == "iPad" || iDev == "AppleTV")
     result += "CPU OS ";
   else
     result += "CPU iPhone OS ";
@@ -1260,7 +1264,7 @@ std::string CSysInfo::GetBuildDate()
 bool CSysInfo::HasVideoToolBoxDecoder()
 {
 #if defined(HAVE_VIDEOTOOLBOXDECODER)
-  return CDarwinUtils::HasVideoToolboxDecoder();
+  return true;
 #else
   return false;
 #endif
@@ -1270,6 +1274,8 @@ std::string CSysInfo::GetBuildTargetPlatformName(void)
 {
 #if defined(TARGET_DARWIN_OSX)
   return "OS X";
+#elif defined(TARGET_DARWIN_TVOS)
+  return "TVOS";
 #elif defined(TARGET_DARWIN_IOS)
   return "iOS";
 #elif defined(TARGET_FREEBSD)
@@ -1293,6 +1299,8 @@ std::string CSysInfo::GetBuildTargetPlatformVersion(void)
 {
 #if defined(TARGET_DARWIN_OSX)
   return XSTR_MACRO(__MAC_OS_X_VERSION_MIN_REQUIRED);
+#elif defined(TARGET_DARWIN_TVOS)
+  return XSTR_MACRO(__TV_OS_VERSION_MIN_REQUIRED);
 #elif defined(TARGET_DARWIN_IOS)
   return XSTR_MACRO(__IPHONE_OS_VERSION_MIN_REQUIRED);
 #elif defined(TARGET_FREEBSD)
@@ -1328,6 +1336,9 @@ std::string CSysInfo::GetBuildTargetPlatformVersionDecoded(void)
     return StringUtils::Format("version %d.%d.%d", (__MAC_OS_X_VERSION_MIN_REQUIRED / 100) % 100, 
       (__MAC_OS_X_VERSION_MIN_REQUIRED / 10) % 10, __MAC_OS_X_VERSION_MIN_REQUIRED % 10);
 #endif // defined(MAC_OS_X_VERSION_10_10) && __MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_10
+#elif defined(TARGET_DARWIN_TVOS)
+  return StringUtils::Format("version %d.%d.%d", (__TV_OS_VERSION_MIN_REQUIRED / 10000) % 100,
+                             (__TV_OS_VERSION_MIN_REQUIRED / 100) % 100, __TV_OS_VERSION_MIN_REQUIRED % 100);
 #elif defined(TARGET_DARWIN_IOS)
   return StringUtils::Format("version %d.%d.%d", (__IPHONE_OS_VERSION_MIN_REQUIRED / 10000) % 100, 
                              (__IPHONE_OS_VERSION_MIN_REQUIRED / 100) % 100, __IPHONE_OS_VERSION_MIN_REQUIRED % 100);
