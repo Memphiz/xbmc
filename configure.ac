@@ -2295,6 +2295,8 @@ OUTPUT_FILES="Makefile \
     tools/darwin/packaging/migrate_to_kodi_ios.sh \
     xbmc/platform/darwin/osx/Info.plist \
     xbmc/platform/darwin/ios/Info.plist \
+    xbmc/platform/darwin/tvos/Info.plist \
+    xbmc/platform/darwin/tvos/TopShelf/Info.plist \
     project/cmake/kodi-config.cmake \
     project/cmake/xbmc-config.cmake \
     tools/android/packaging/xbmc/AndroidManifest.xml \
