@@ -2221,7 +2221,10 @@ OUTPUT_FILES="Makefile \
     tools/darwin/packaging/migrate_to_kodi_ios.sh \
     xbmc/platform/darwin/osx/Info.plist \
     xbmc/platform/darwin/ios/Info.plist \
+    xbmc/platform/darwin/tvos/Info.plist \
+    xbmc/platform/darwin/tvos/TopShelf/Info.plist \
     project/cmake/KodiConfig.cmake \
+    project/cmake/XBMCConfig.cmake \
     tools/android/packaging/xbmc/AndroidManifest.xml \
     tools/android/packaging/Makefile \
     tools/android/packaging/xbmc/src/org/xbmc/kodi/Splash.java \
