@@ -196,9 +196,22 @@ void CAdvancedSettings::Initialize()
 
   m_moviesExcludeFromScanRegExps.clear();
   m_moviesExcludeFromScanRegExps.push_back("-trailer");
+  m_moviesExcludeFromScanRegExps.push_back("[\\/]\\.\\_");
+  m_moviesExcludeFromScanRegExps.push_back("\\.DS_Store");
+  m_moviesExcludeFromScanRegExps.push_back("\\.AppleDouble");
   m_moviesExcludeFromScanRegExps.push_back("[!-._ \\\\/]sample[-._ \\\\/]");
   m_moviesExcludeFromScanRegExps.push_back("[\\/](proof|subs)[\\/]");
+
+  m_tvshowExcludeFromScanRegExps.clear();
+  m_tvshowExcludeFromScanRegExps.push_back("[\\/]\\.\\_");
+  m_tvshowExcludeFromScanRegExps.push_back("\\.DS_Store");
+  m_tvshowExcludeFromScanRegExps.push_back("\\.AppleDouble");
   m_tvshowExcludeFromScanRegExps.push_back("[!-._ \\\\/]sample[-._ \\\\/]");
+
+  m_audioExcludeFromScanRegExps.clear();
+  m_audioExcludeFromScanRegExps.push_back("[\\/]\\.\\_");
+  m_audioExcludeFromScanRegExps.push_back("\\.DS_Store");
+  m_audioExcludeFromScanRegExps.push_back("\\.AppleDouble");
 
   m_folderStackRegExps.clear();
   m_folderStackRegExps.push_back("((cd|dvd|dis[ck])[0-9]+)$");
@@ -299,9 +312,17 @@ void CAdvancedSettings::Initialize()
   m_curlDisableIPV6 = false;      //Certain hardware/OS combinations have trouble
                                   //with ipv6.
 
+#if defined(TARGET_DARWIN_IOS)
+  m_startFullScreen = true;
+#else
   m_startFullScreen = false;
+#endif
   m_showExitButton = true;
+#if defined(TARGET_DARWIN_TVOS)
+  m_splashImage = false;
+#else
   m_splashImage = true;
+#endif
 
   m_playlistRetries = 100;
   m_playlistTimeout = 20; // 20 seconds timeout
@@ -347,7 +368,11 @@ void CAdvancedSettings::Initialize()
 
   m_enableMultimediaKeys = false;
 
+#if defined(TARGET_DARWIN_IOS)
+  m_canWindowed = false;
+#else
   m_canWindowed = true;
+#endif
   m_guiVisualizeDirtyRegions = false;
   m_guiAlgorithmDirtyRegions = 3;
   m_guiDirtyRegionNoFlipTimeout = 0;
@@ -378,13 +403,7 @@ void CAdvancedSettings::Initialize()
   m_extraLogLevels = 0;
 
   #if defined(TARGET_DARWIN)
-    std::string logDir = getenv("HOME");
-    #if defined(TARGET_DARWIN_OSX)
-    logDir += "/Library/Logs/";
-    #else // ios
-    logDir += "/" + std::string(CDarwinUtils::GetAppRootFolder()) + "/";
-    #endif
-    m_logFolder = logDir;
+    m_logFolder = "special://logs";
   #else
     m_logFolder = "special://home/";              // log file location
   #endif
