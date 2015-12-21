@@ -18,15 +18,16 @@
  *
  */
 
-#define BOOL XBMC_BOOL 
+#define BOOL XBMC_BOOL
 #include "system.h"
 #include "Application.h"
 #include "DllPaths.h"
 #include "GUIUserMessages.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
-#include "CompileInfo.h"
+#include "utils/StringUtils.h"
 
+#include "CompileInfo.h"
 #undef BOOL
 
 #if defined(TARGET_DARWIN)
@@ -35,6 +36,9 @@
   #import <UIKit/UIKit.h>
   #import <mach/mach_host.h>
   #import <sys/sysctl.h>
+  #if defined(TARGET_DARWIN_TVOS)
+    #import "platform/darwin/tvos/MainController.h"
+  #endif
 #else
   #import <Cocoa/Cocoa.h>
   #import <CoreFoundation/CoreFoundation.h>
@@ -53,11 +57,6 @@
 #ifndef NSAppKitVersionNumber10_6
 #define NSAppKitVersionNumber10_6 1038
 #endif
-
-#ifndef NSAppKitVersionNumber10_9
-#define NSAppKitVersionNumber10_9 1265
-#endif
-
 
 enum iosPlatform
 {
@@ -117,6 +116,7 @@ enum iosPlatform
   iPhone6Plus,        //from here on list devices with retina support which have scale == 3.0
   iPhone6sPlus,
   iPhone7Plus,
+  AppleTV4,
 };
 
 // platform strings are based on http://theiphonewiki.com/wiki/Models
@@ -213,6 +213,7 @@ enum iosPlatform getIosPlatform()
     else if (devStr == "iPad6,7") eDev = iPadPro12_9InchWifi;
     else if (devStr == "iPad6,8") eDev = iPadPro12_9InchCellular;
     else if (devStr == "AppleTV2,1") eDev = AppleTV2;
+    else if (devStr == "AppleTV5,3") eDev = AppleTV4;
   }
 #endif
   return eDev;
@@ -228,7 +229,6 @@ bool CDarwinUtils::IsMavericks(void)
   // us when mavericks came out
   if (isMavericks == -1)
   {
-    CLog::Log(LOGDEBUG, "Detected Mavericks...");
     isMavericks = [NSProcessInfo instancesRespondToSelector:@selector(beginActivityWithOptions:reason:)] == TRUE ? 1 : 0;
   }
 #endif
@@ -262,6 +262,26 @@ bool CDarwinUtils::IsSnowLeopard(void)
   return isSnowLeopard == 1;
 }
 
+bool CDarwinUtils::DeviceHas10BitH264(void)
+{
+  static int has10BitH264 = -1;
+#if defined(TARGET_DARWIN_IOS)
+  if (has10BitH264 == -1)
+  {
+    cpu_type_t type;
+    size_t size = sizeof(type);
+    sysctlbyname("hw.cputype", &type, &size, NULL, 0);
+
+    // 10bit H264 decoding was introduced with the 64bit ARM CPUs, the A7/A8
+    if (type == CPU_TYPE_ARM64)
+      has10BitH264 = 1;
+    else
+      has10BitH264 = 0;
+  }
+#endif
+  return has10BitH264 == 1;
+}
+
 bool CDarwinUtils::DeviceHasRetina(double &scale)
 {
   static enum iosPlatform platform = iDeviceUnknown;
@@ -290,12 +310,14 @@ bool CDarwinUtils::DeviceHasRetina(double &scale)
 
 bool CDarwinUtils::DeviceHasLeakyVDA(void)
 {
-  static int hasLeakyVDA = -1;
 #if defined(TARGET_DARWIN_OSX)
+  static int hasLeakyVDA = -1;
   if (hasLeakyVDA == -1)
     hasLeakyVDA = NSAppKitVersionNumber <= NSAppKitVersionNumber10_9 ? 1 : 0;
-#endif
   return hasLeakyVDA == 1;
+#else
+  return false;
+#endif
 }
 
 const char *CDarwinUtils::GetOSReleaseString(void)
@@ -380,7 +402,7 @@ int  CDarwinUtils::GetFrameworkPath(bool forPython, char* path, size_t *pathsize
   {
     strcpy(path, [pathname UTF8String]);
     // Move backwards to last "/"
-    for (int n=strlen(path)-1; path[n] != '/'; n--)
+    for (size_t n=strlen(path)-1; path[n] != '/'; n--)
       path[n] = '\0';
     strcat(path, "Frameworks");
     *pathsize = strlen(path);
@@ -440,88 +462,106 @@ int  CDarwinUtils::GetExecutablePath(char* path, size_t *pathsize)
   return 0;
 }
 
+const char* CDarwinUtils::GetUserLogDirectory(void)
+{
+  static std::string appLogFolder;
+  if (appLogFolder.empty())
+  {
+    // log file location
+    #if defined(TARGET_DARWIN_TVOS)
+      appLogFolder = CDarwinUtils::GetOSCachesDirectory();
+    #elif defined(TARGET_DARWIN_IOS)
+      appLogFolder = URIUtils::AddFileToFolder(CDarwinUtils::GetOSAppRootFolder(), CCompileInfo::GetAppName());
+    #else
+      appLogFolder = URIUtils::AddFileToFolder(getenv("HOME"), "Library");
+    #endif
+    appLogFolder = URIUtils::AddFileToFolder(appLogFolder, "logs");
+    // stupid log directory wants a ending slash
+    URIUtils::AddSlashAtEnd(appLogFolder);
+  }
+
+  return appLogFolder.c_str();
+}
+
+const char* CDarwinUtils::GetUserTempDirectory(void)
+{
+  static std::string appTempFolder;
+  if (appTempFolder.empty())
+  {
+    // location for temp files
+    #if defined(TARGET_DARWIN_TVOS)
+      appTempFolder = CDarwinUtils::GetOSTemporaryDirectory();
+    #elif defined(TARGET_DARWIN_IOS)
+      appTempFolder = URIUtils::AddFileToFolder(CDarwinUtils::GetOSAppRootFolder(),  CCompileInfo::GetAppName());
+    #else
+      std::string dotLowerAppName = StringUtils::Format(".%s", CCompileInfo::GetAppName());
+      StringUtils::ToLower(dotLowerAppName);
+      appTempFolder = URIUtils::AddFileToFolder(getenv("HOME"), dotLowerAppName);
+      mkdir(appTempFolder.c_str(), 0755);
+    #endif
+    appTempFolder = URIUtils::AddFileToFolder(appTempFolder, "temp");
+  }
+
+  return appTempFolder.c_str();
+}
+
 const char* CDarwinUtils::GetUserHomeDirectory(void)
 {
   static std::string appHomeFolder;
   if (appHomeFolder.empty())
   {
-#if defined(TARGET_DARWIN_IOS)
-    appHomeFolder = URIUtils::AddFileToFolder(CDarwinUtils::GetAppRootFolder(), CCompileInfo::GetAppName());
-#else
-    appHomeFolder = URIUtils::AddFileToFolder(getenv("HOME"), "Library/Application Support");
-    appHomeFolder = URIUtils::AddFileToFolder(appHomeFolder, CCompileInfo::GetAppName());
-#endif
+    #if defined(TARGET_DARWIN_TVOS)
+      appHomeFolder = URIUtils::AddFileToFolder(CDarwinUtils::GetOSCachesDirectory(), "home");
+    #elif defined(TARGET_DARWIN_IOS)
+      appHomeFolder = URIUtils::AddFileToFolder(CDarwinUtils::GetOSAppRootFolder(), CCompileInfo::GetAppName());
+    #else
+      appHomeFolder = URIUtils::AddFileToFolder(getenv("HOME"), "Library/Application Support");
+      appHomeFolder = URIUtils::AddFileToFolder(appHomeFolder, CCompileInfo::GetAppName());
+    #endif
   }
-  
+
   return appHomeFolder.c_str();
 }
 
-const char* CDarwinUtils::GetAppRootFolder(void)
+const char* CDarwinUtils::GetOSAppRootFolder(void)
 {
-  static std::string rootFolder = "";
-  if ( rootFolder.length() == 0)
-  {
-    if (IsIosSandboxed())
-    {
-      // when we are sandbox make documents our root
-      // so that user can access everything he needs 
-      // via itunes sharing
-      rootFolder = "Documents";
-    }
-    else
-    {
-      rootFolder = "Library/Preferences";
-    }
-  }
-  return rootFolder.c_str();
+  NSArray *writablePaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+  NSString *appTempFolder = [writablePaths lastObject];
+  return [appTempFolder UTF8String];
 }
 
-bool CDarwinUtils::IsIosSandboxed(void)
+const char* CDarwinUtils::GetOSCachesDirectory()
 {
-  static int ret = -1;
-  if (ret == -1)
+  static std::string cacheFolder;
+  if (cacheFolder.empty())
   {
-    size_t path_size = 2*MAXPATHLEN;
-    char     given_path[2*MAXPATHLEN];
-    int      result = -1; 
-    ret = 0;
-    memset(given_path, 0x0, path_size);
-    /* Get Application directory */  
-    result = GetExecutablePath(given_path, &path_size);
-    if (result == 0)
-    {
-      // we re sandboxed if we are installed in /var/mobile/Applications
-      if (strlen("/var/mobile/Applications/") < path_size &&
-        strncmp(given_path, "/var/mobile/Applications/", strlen("/var/mobile/Applications/")) == 0)
-      {
-        ret = 1;
-      }
-
-      // since ios8 the sandbox filesystem has moved to container approach
-      // we are also sandboxed if this is our bundle path
-      if (strlen("/var/mobile/Containers/Bundle/") < path_size &&
-        strncmp(given_path, "/var/mobile/Containers/Bundle/", strlen("/var/mobile/Containers/Bundle/")) == 0)
-      {
-        ret = 1;
-      }
-      
-      // Some time after ios8, Apple decided to change this yet again
-      if (strlen("/var/containers/Bundle/") < path_size &&
-        strncmp(given_path, "/var/containers/Bundle/", strlen("/var/containers/Bundle/")) == 0)
-      {
-        ret = 1;
-      }
-    }
+    NSString *cachePath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
+    cacheFolder = [cachePath UTF8String];
+    URIUtils::RemoveSlashAtEnd(cacheFolder);
   }
-  return ret == 1;
+  return cacheFolder.c_str();
+}
+
+const char* CDarwinUtils::GetOSTemporaryDirectory()
+{
+  static std::string tmpFolder;
+  if (tmpFolder.empty())
+  {
+    tmpFolder = [NSTemporaryDirectory() UTF8String];
+    URIUtils::RemoveSlashAtEnd(tmpFolder);
+  }
+
+  return tmpFolder.c_str();
 }
 
 int CDarwinUtils::BatteryLevel(void)
 {
   float batteryLevel = 0;
+#if !defined(TARGET_DARWIN_TVOS)
 #if defined(TARGET_DARWIN_IOS)
   batteryLevel = [[UIDevice currentDevice] batteryLevel];
 #else
+  CCocoaAutoPool pool;
   CFTypeRef powerSourceInfo = IOPSCopyPowerSourcesInfo();
   CFArrayRef powerSources = IOPSCopyPowerSourcesList(powerSourceInfo);
 
@@ -549,17 +589,28 @@ int CDarwinUtils::BatteryLevel(void)
   CFRelease(powerSources);
   CFRelease(powerSourceInfo);
 #endif
+#endif
   return batteryLevel * 100;  
 }
 
 void CDarwinUtils::EnableOSScreenSaver(bool enable)
 {
-
+#if defined(TARGET_DARWIN_TVOS)
+  if (enable)
+    [g_xbmcController enableScreenSaver];
+  else
+    [g_xbmcController disableScreenSaver];
+#endif
 }
 
-void CDarwinUtils::ResetSystemIdleTimer()
+bool CDarwinUtils::ResetSystemIdleTimer()
 {
-
+#if defined(TARGET_DARWIN_TVOS)
+  //CLog::Log(LOGDEBUG, "CDarwinUtils::ResetSystemIdleTimer");
+  return [g_xbmcController resetSystemIdleTimer];
+#else
+  return false;
+#endif
 }
 
 void CDarwinUtils::SetScheduling(int message)
@@ -589,6 +640,7 @@ void CDarwinUtils::SetScheduling(int message)
 
 bool CFStringRefToStringWithEncoding(CFStringRef source, std::string &destination, CFStringEncoding encoding)
 {
+  CCocoaAutoPool pool;
   const char *cstr = CFStringGetCStringPtr(source, encoding);
   if (!cstr)
   {
@@ -623,11 +675,13 @@ void CDarwinUtils::PrintDebugString(std::string debugString)
 
 bool CDarwinUtils::CFStringRefToString(CFStringRef source, std::string &destination)
 {
+  CCocoaAutoPool pool;
   return CFStringRefToStringWithEncoding(source, destination, CFStringGetSystemEncoding());
 }
 
 bool CDarwinUtils::CFStringRefToUTF8String(CFStringRef source, std::string &destination)
 {
+  CCocoaAutoPool pool;
   return CFStringRefToStringWithEncoding(source, destination, kCFStringEncodingUTF8);
 }
 
@@ -641,6 +695,8 @@ const std::string& CDarwinUtils::GetManufacturer(void)
 	// until other than Apple devices with iOS will be released
     manufName = "Apple Inc.";
 #elif defined(TARGET_DARWIN_OSX)
+    CCocoaAutoPool pool;
+
     const CFMutableDictionaryRef matchExpDev = IOServiceMatching("IOPlatformExpertDevice");
     if (matchExpDev)
     {
@@ -674,7 +730,7 @@ bool CDarwinUtils::IsAliasShortcut(const std::string& path, bool isdirectory)
 
 #if defined(TARGET_DARWIN_OSX)
   CCocoaAutoPool pool;
-  
+
   NSURL *nsUrl;
   if (isdirectory)
   {
@@ -688,9 +744,8 @@ bool CDarwinUtils::IsAliasShortcut(const std::string& path, bool isdirectory)
     NSString *nsPath = [NSString stringWithUTF8String:path.c_str()];
     nsUrl = [NSURL fileURLWithPath:nsPath isDirectory:FALSE];
   }
-  
-  NSNumber* wasAliased = nil;
 
+  NSNumber* wasAliased = nil;
   if (nsUrl != nil)
   {
     NSError *error = nil;
@@ -707,6 +762,8 @@ bool CDarwinUtils::IsAliasShortcut(const std::string& path, bool isdirectory)
 void CDarwinUtils::TranslateAliasShortcut(std::string& path)
 {
 #if defined(TARGET_DARWIN_OSX)
+  CCocoaAutoPool pool;
+
   NSString *nsPath = [NSString stringWithUTF8String:path.c_str()];
   NSURL *nsUrl = [NSURL fileURLWithPath:nsPath];
   
@@ -739,6 +796,8 @@ bool CDarwinUtils::CreateAliasShortcut(const std::string& fromPath, const std::s
 {
   bool ret = false;
 #if defined(TARGET_DARWIN_OSX)
+  CCocoaAutoPool pool;
+
   NSString *nsToPath = [NSString stringWithUTF8String:toPath.c_str()];
   NSURL *toUrl = [NSURL fileURLWithPath:nsToPath];
   NSString *nsFromPath = [NSString stringWithUTF8String:fromPath.c_str()];

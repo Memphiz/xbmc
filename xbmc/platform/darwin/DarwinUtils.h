@@ -36,6 +36,7 @@ public:
   static bool        IsSnowLeopard(void);
   static bool        DeviceHasRetina(double &scale);
   static bool        DeviceHasLeakyVDA(void);
+  static bool        DeviceHas10BitH264(void);
   static const char *GetOSReleaseString(void);
   static const char *GetOSVersionString(void);
   static float       GetIOSVersion(void);
@@ -43,13 +44,15 @@ public:
   static const char *GetOSXVersionString(void);
   static int         GetFrameworkPath(bool forPython, char* path, size_t *pathsize);
   static int         GetExecutablePath(char* path, size_t *pathsize);
+  static const char *GetUserLogDirectory(void);
+  static const char *GetUserTempDirectory(void);
   static const char *GetUserHomeDirectory(void);
-  static const char *GetAppRootFolder(void);
-  static bool        IsIosSandboxed(void);
-  static bool        HasVideoToolboxDecoder(void);
+  static const char *GetOSAppRootFolder(void);
+  static const char *GetOSCachesDirectory();
+  static const char *GetOSTemporaryDirectory();
   static int         BatteryLevel(void);
   static void        EnableOSScreenSaver(bool enable);
-  static void        ResetSystemIdleTimer();
+  static bool        ResetSystemIdleTimer();
   static void        SetScheduling(int message);
   static void        PrintDebugString(std::string debugString);
   static bool        CFStringRefToString(CFStringRef source, std::string& destination);
