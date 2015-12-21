@@ -2217,6 +2217,7 @@ OUTPUT_FILES="Makefile \
     tools/darwin/Configurations/App.xcconfig \
     tools/darwin/Configurations/Common.xcconfig \
     tools/darwin/packaging/ios/mkdeb-ios.sh \
+    tools/darwin/packaging/tvos/mkdeb-tvos.sh \
     tools/darwin/packaging/osx/mkdmg-osx.sh \
     tools/darwin/packaging/migrate_to_kodi_ios.sh \
     xbmc/platform/darwin/osx/Info.plist \
