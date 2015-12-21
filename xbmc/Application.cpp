@@ -914,9 +914,9 @@ bool CApplication::InitDirectoriesLinux()
     if (getenv(envAppTemp))
       strTempPath = getenv(envAppTemp);
     CSpecialProtocol::SetTempPath(strTempPath);
+    CSpecialProtocol::SetLogsPath(strTempPath);
 
-    URIUtils::AddSlashAtEnd(strTempPath);
-    g_advancedSettings.m_logFolder = strTempPath;
+    g_advancedSettings.m_logFolder = "special://logs";
 
     CreateUserDirs();
 
@@ -936,10 +936,10 @@ bool CApplication::InitDirectoriesLinux()
     if (getenv(envAppTemp))
       strTempPath = getenv(envAppTemp);
     CSpecialProtocol::SetTempPath(strTempPath);
+    CSpecialProtocol::SetLogsPath(strTempPath);
     CreateUserDirs();
 
-    URIUtils::AddSlashAtEnd(strTempPath);
-    g_advancedSettings.m_logFolder = strTempPath;
+    g_advancedSettings.m_logFolder = "special://logs";
   }
 
   return true;
@@ -1050,8 +1050,8 @@ bool CApplication::InitDirectoriesWin32()
   CSpecialProtocol::SetXBMCPath(xbmcPath);
 
   std::string strWin32UserFolder = CWIN32Util::GetProfilePath();
-
-  g_advancedSettings.m_logFolder = strWin32UserFolder;
+  CSpecialProtocol::SetLogsPath(strWin32UserFolder);
+  g_advancedSettings.m_logFolder = "special://logs";
   CSpecialProtocol::SetHomePath(strWin32UserFolder);
   CSpecialProtocol::SetMasterProfilePath(URIUtils::AddFileToFolder(strWin32UserFolder, "userdata"));
   CSpecialProtocol::SetTempPath(URIUtils::AddFileToFolder(strWin32UserFolder,"cache"));
@@ -1078,6 +1078,7 @@ void CApplication::CreateUserDirs()
   CDirectory::Create("special://home/system");
   CDirectory::Create("special://masterprofile/");
   CDirectory::Create("special://temp/");
+  CDirectory::Create("special://logs");
   CDirectory::Create("special://temp/temp"); // temp directory for python and dllGetTempPathA
 }
 
