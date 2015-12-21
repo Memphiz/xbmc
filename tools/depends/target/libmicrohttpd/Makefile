@@ -35,13 +35,13 @@ $(PLATFORM): $(TARBALLS_LOCATION)/$(ARCHIVE) $(DEPS)
 	cd $(PLATFORM); $(CONFIGURE)
 
 $(LIBDYLIB): $(PLATFORM)
-	$(MAKE) -C $(PLATFORM)/src/microhttpd
-	$(MAKE) -C $(PLATFORM)/src/include install
+	$(MAKE) -j1 -C $(PLATFORM)/src/microhttpd
+	$(MAKE) -j1 -C $(PLATFORM)/src/include install
 	$(STRIP_MEMMEM)
 
 .installed-$(PLATFORM): $(LIBDYLIB)
 	rm -f $(PREFIX)/lib/libmicrohttpd.so $(PREFIX)/lib/libmicrohttpd.so.5 $(PREFIX)/lib/libmicrohttpd.so.5.2.1
-	$(MAKE) -C $(PLATFORM)/src/microhttpd install
+	$(MAKE) -j1 -C $(PLATFORM)/src/microhttpd install
 	touch $@
 
 clean:
