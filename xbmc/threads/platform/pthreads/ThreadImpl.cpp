@@ -70,6 +70,8 @@ void CThread::SetThreadInfo()
 #endif
 #elif defined(TARGET_ANDROID)
   m_ThreadOpaque.LwpId = gettid();
+#elif defined(TARGET_DARWIN_IOS)
+  m_ThreadOpaque.LwpId = pthread_mach_thread_np(pthread_self());
 #else
   m_ThreadOpaque.LwpId = syscall(SYS_gettid);
 #endif

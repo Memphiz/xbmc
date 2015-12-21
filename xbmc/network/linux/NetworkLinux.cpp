@@ -539,12 +539,15 @@ void CNetworkLinux::SetNameServers(const std::vector<std::string>& nameServers)
 
 bool CNetworkLinux::PingHost(unsigned long remote_ip, unsigned int timeout_ms)
 {
+#if defined(TARGET_DARWIN_TVOS)
+  return false;
+#else
   char cmd_line [64];
 
   struct in_addr host_ip; 
   host_ip.s_addr = remote_ip;
 
-#if defined (TARGET_DARWIN_IOS) // no timeout option available
+#if defined (TARGET_DARWIN_IOS)
   sprintf(cmd_line, "ping -c 1 %s", inet_ntoa(host_ip));
 #elif defined (TARGET_DARWIN) || defined (TARGET_FREEBSD)
   sprintf(cmd_line, "ping -c 1 -t %d %s", timeout_ms / 1000 + (timeout_ms % 1000) != 0, inet_ntoa(host_ip));
@@ -565,6 +568,7 @@ bool CNetworkLinux::PingHost(unsigned long remote_ip, unsigned int timeout_ms)
     CLog::Log(LOGERROR, "Ping fail : status = %d, errno = %d : '%s'", status, errno, cmd_line);
 
   return result == 0;
+#endif
 }
 
 #if defined(TARGET_DARWIN) || defined(TARGET_FREEBSD)
