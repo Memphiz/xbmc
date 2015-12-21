@@ -46,9 +46,14 @@
 #import <OpenGLES/ES2/glext.h>
 #import <QuartzCore/CADisplayLink.h>
 
+#if defined(TARGET_DARWIN_TVOS)
+#import "platform/darwin/tvos/MainController.h"
+#else
 #import "platform/darwin/ios/XBMCController.h"
 #import "platform/darwin/ios/IOSScreenManager.h"
+#endif
 #include "platform/darwin/DarwinUtils.h"
+
 #import <dlfcn.h>
 
 // IOSDisplayLinkCallback is declared in the lower part of the file
@@ -87,7 +92,7 @@ CWinSystemIOS::~CWinSystemIOS()
 
 bool CWinSystemIOS::InitWindowSystem()
 {
-	return CWinSystemBase::InitWindowSystem();
+  return CWinSystemBase::InitWindowSystem();
 }
 
 bool CWinSystemIOS::DestroyWindowSystem()
@@ -161,12 +166,12 @@ UIScreenMode *getModeForResolution(int width, int height, unsigned int screenIdx
     return NULL;
     
   UIScreen *aScreen = [[UIScreen screens]objectAtIndex:screenIdx];
-  for ( UIScreenMode *mode in [aScreen availableModes] )
+  for ( UIScreenMode *mode in [g_xbmcController availableScreenModes:aScreen]  )
   {
     //for main screen also find modes where width and height are
     //exchanged (because of the 90°degree rotated buildinscreens)
-    if((mode.size.width == width && mode.size.height == height) || 
-        (screenIdx == 0 && mode.size.width == height && mode.size.height == width))
+    if((mode.size.width == width && mode.size.height == height) ||
+       (screenIdx == 0 && mode.size.width == height && mode.size.height == width))
     {
       CLog::Log(LOGDEBUG,"Found matching mode");
       return mode;
@@ -202,10 +207,12 @@ int CWinSystemIOS::GetNumScreens()
 int CWinSystemIOS::GetCurrentScreen()
 {
   int idx = 0;
-  if ([[IOSScreenManager sharedInstance] isExternalScreen])
-  {
-    idx = 1;
-  }
+#if !defined(TARGET_DARWIN_TVOS)
+    if ([[IOSScreenManager sharedInstance] isExternalScreen])
+    {
+      idx = 1;
+    }
+#endif
   return idx;
 }
 
@@ -223,7 +230,7 @@ bool CWinSystemIOS::GetScreenResolution(int* w, int* h, double* fps, int screenI
   //then use the preferred mode
   if(*h == 0 || *w ==0)
   {
-    UIScreenMode *firstMode = [screen preferredMode];
+    UIScreenMode *firstMode = [g_xbmcController preferredScreenMode:screen];
     *w = firstMode.size.width;
     *h = firstMode.size.height;
   }
@@ -289,7 +296,7 @@ void CWinSystemIOS::FillInVideoModes()
     //screen 0 is mainscreen - 1 has to be the external one...
     UIScreen *aScreen = [[UIScreen screens]objectAtIndex:disp];
     //found external screen
-    for ( UIScreenMode *mode in [aScreen availableModes] )
+    for ( UIScreenMode *mode in [g_xbmcController availableScreenModes:aScreen] )
     {
       w = mode.size.width;
       h = mode.size.height;
@@ -363,7 +370,7 @@ void CWinSystemIOS::OnAppFocusChange(bool focus)
 {
   CSingleLock lock(m_resourceSection);
   m_bIsBackgrounded = !focus;
-  CLog::Log(LOGDEBUG, "CWinSystemIOS::OnAppFocusChange: %d", focus ? 1 : 0);
+  //CLog::Log(LOGDEBUG, "CWinSystemIOS::OnAppFocusChange: %d", focus ? 1 : 0);
   for (std::vector<IDispResource *>::iterator i = m_resources.begin(); i != m_resources.end(); i++)
     (*i)->OnAppFocusChange(focus);
 }
@@ -388,16 +395,19 @@ bool CWinSystemIOS::InitDisplayLink(CVideoSyncIos *syncImpl)
 {
   //init with the appropriate display link for the
   //used screen
-  if([[IOSScreenManager sharedInstance] isExternalScreen])
-  {
-    fprintf(stderr,"InitDisplayLink on external");
-  }
-  else
-  {
-    fprintf(stderr,"InitDisplayLink on internal");
-  }
-  
-  unsigned int currentScreenIdx = [[IOSScreenManager sharedInstance] GetScreenIdx];
+#if !defined(TARGET_DARWIN_TVOS)
+    if([[IOSScreenManager sharedInstance] isExternalScreen])
+    {
+      fprintf(stderr,"InitDisplayLink on external");
+    }
+    else
+    {
+      fprintf(stderr,"InitDisplayLink on internal");
+    }
+    unsigned int currentScreenIdx = [[IOSScreenManager sharedInstance] GetScreenIdx];
+#else
+    unsigned int currentScreenIdx = 0;
+#endif
   UIScreen * currentScreen = [[UIScreen screens] objectAtIndex:currentScreenIdx];
   [m_pDisplayLink->callbackClass SetVideoSyncImpl:syncImpl];
   m_pDisplayLink->impl = [currentScreen displayLinkWithTarget:m_pDisplayLink->callbackClass selector:@selector(runDisplayLink)];
