@@ -51,6 +51,9 @@
 #include "platform/darwin/DarwinUtils.h"
 #endif
 #if defined(TARGET_DARWIN_IOS)
+#if defined(TARGET_DARWIN_TVOS)
+#include "platform/darwin/tvos/TVOSSettingsHandler.h"
+#endif
 #include "SettingAddon.h"
 #endif
 #if defined(TARGET_RASPBERRY_PI)
@@ -382,6 +385,10 @@ const std::string CSettings::SETTING_INPUT_CONTROLLERPOWEROFF = "input.controlle
 const std::string CSettings::SETTING_INPUT_APPLEREMOTEMODE = "input.appleremotemode";
 const std::string CSettings::SETTING_INPUT_APPLEREMOTEALWAYSON = "input.appleremotealwayson";
 const std::string CSettings::SETTING_INPUT_APPLEREMOTESEQUENCETIME = "input.appleremotesequencetime";
+const std::string CSettings::SETTING_INPUT_APPLESIRI = "input.applesiri";
+const std::string CSettings::SETTING_INPUT_APPLESIRIOSDSWIPE = "input.applesiriosdswipe";
+const std::string CSettings::SETTING_INPUT_APPLESIRITIMEOUT = "input.applesiritimeout";
+const std::string CSettings::SETTING_INPUT_APPLESIRITIMEOUTENABLED = "input.applesiritimeoutenabled";
 const std::string CSettings::SETTING_NETWORK_USEHTTPPROXY = "network.usehttpproxy";
 const std::string CSettings::SETTING_NETWORK_HTTPPROXYTYPE = "network.httpproxytype";
 const std::string CSettings::SETTING_NETWORK_HTTPPROXYSERVER = "network.httpproxyserver";
@@ -831,6 +838,9 @@ bool CSettings::InitializeDefinitions()
 #if defined(TARGET_DARWIN_OSX)
   if (CFile::Exists(SETTINGS_XML_FOLDER "darwin_osx.xml") && !Initialize(SETTINGS_XML_FOLDER "darwin_osx.xml"))
     CLog::Log(LOGFATAL, "Unable to load osx-specific settings definitions");
+#elif defined(TARGET_DARWIN_TVOS)
+  if (CFile::Exists(SETTINGS_XML_FOLDER "darwin_tvos.xml") && !Initialize(SETTINGS_XML_FOLDER "darwin_tvos.xml"))
+    CLog::Log(LOGFATAL, "Unable to load tvos-specific settings definitions");
 #elif defined(TARGET_DARWIN_IOS)
   if (CFile::Exists(SETTINGS_XML_FOLDER "darwin_ios.xml") && !Initialize(SETTINGS_XML_FOLDER "darwin_ios.xml"))
     CLog::Log(LOGFATAL, "Unable to load ios-specific settings definitions");
@@ -1197,6 +1207,15 @@ void CSettings::InitializeISettingCallbacks()
   m_settingsManager->RegisterCallback(&XBMCHelper::GetInstance(), settingSet);
 #endif
 
+#if defined(TARGET_DARWIN_TVOS)
+  settingSet.clear();
+  settingSet.insert(CSettings::SETTING_INPUT_APPLESIRI);
+  settingSet.insert(CSettings::SETTING_INPUT_APPLESIRIOSDSWIPE);
+  settingSet.insert(CSettings::SETTING_INPUT_APPLESIRITIMEOUT);
+  settingSet.insert(CSettings::SETTING_INPUT_APPLESIRITIMEOUTENABLED);
+  m_settingsManager->RegisterCallback(&CTVOSInputSettings::GetInstance(), settingSet);
+#endif
+  
   settingSet.clear();
   settingSet.insert(CSettings::SETTING_ADDONS_AUTOUPDATES);
   m_settingsManager->RegisterCallback(&ADDON::CRepositoryUpdater::GetInstance(), settingSet);
