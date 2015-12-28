@@ -72,6 +72,7 @@ static int ToggleSetting(const std::vector<std::string>& params)
 {
   int setting = CSkinSettings::GetInstance().TranslateBool(params[0]);
   CSkinSettings::GetInstance().SetBool(setting, !CSkinSettings::GetInstance().GetBool(setting));
+  CSkinSettings::GetInstance().SaveXMLSettings();
   CSettings::GetInstance().Save();
 
   return 0;
@@ -154,12 +155,14 @@ static int SetBool(const std::vector<std::string>& params)
   {
     int string = CSkinSettings::GetInstance().TranslateBool(params[0]);
     CSkinSettings::GetInstance().SetBool(string, StringUtils::EqualsNoCase(params[1], "true"));
+    CSkinSettings::GetInstance().SaveXMLSettings();
     CSettings::GetInstance().Save();
     return 0;
   }
   // default is to set it to true
   int setting = CSkinSettings::GetInstance().TranslateBool(params[0]);
   CSkinSettings::GetInstance().SetBool(setting, true);
+  CSkinSettings::GetInstance().SaveXMLSettings();
   CSettings::GetInstance().Save();
 
   return 0;
@@ -208,6 +211,7 @@ static int SetPath(const std::vector<std::string>& params)
   if (CGUIDialogFileBrowser::ShowAndGetDirectory(localShares, g_localizeStrings.Get(657), value))
     CSkinSettings::GetInstance().SetString(string, value);
 
+  CSkinSettings::GetInstance().SaveXMLSettings();
   CSettings::GetInstance().Save();
 
   return 0;
@@ -411,6 +415,7 @@ static int SetTheme(const std::vector<std::string>& params)
 static int SkinReset(const std::vector<std::string>& params)
 {
   CSkinSettings::GetInstance().Reset(params[0]);
+  CSkinSettings::GetInstance().SaveXMLSettings();
   CSettings::GetInstance().Save();
 
   return 0;
@@ -422,6 +427,7 @@ static int SkinReset(const std::vector<std::string>& params)
 static int SkinResetAll(const std::vector<std::string>& params)
 {
   CSkinSettings::GetInstance().Reset();
+  CSkinSettings::GetInstance().SaveXMLSettings();
   CSettings::GetInstance().Save();
 
   return 0;
