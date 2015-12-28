@@ -816,6 +816,25 @@ XBMCController *g_xbmcController;
 {
 }
 //--------------------------------------------------------------
+- (bool)resetSystemIdleTimer
+{
+  return false;
+}
+//--------------------------------------------------------------
+- (UIScreenMode*) preferredScreenMode:(UIScreen*) screen
+{
+  // present because preferredMode is prohibited under tvOS
+  // and we factor it out from WinSystemIOS.mm
+  return [screen preferredMode];
+}
+//--------------------------------------------------------------
+- (NSArray<UIScreenMode *> *) availableScreenModes:(UIScreen*) screen
+{
+  // present because availableModes is prohibited under tvOS
+  // and we factor it out from WinSystemIOS.mm
+  return [screen availableModes];
+}
+//--------------------------------------------------------------
 - (bool) changeScreen: (unsigned int)screenIdx withMode:(UIScreenMode *)mode
 {
   bool ret = false;
