@@ -136,7 +136,7 @@ id objectFromVariant(const CVariant &data)
 @synthesize m_clickResetPan;
 
 // set to 1 to enable new remote function, to be tested for 1.0.2
-#define NEW_REMOTE_HANDLING 1
+#define NEW_REMOTE_HANDLING 0
 
 #pragma mark - internal key press methods
 //--------------------------------------------------------------
