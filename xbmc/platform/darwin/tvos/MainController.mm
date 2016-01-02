@@ -692,72 +692,66 @@ id objectFromVariant(const CVariant &data)
       
       key = [self getPanDirection:gesturePoint];
       
-      // ignore UP/DOWN swipes while in full screen playback
-      if (g_windowManager.GetFocusedWindow() != WINDOW_FULLSCREEN_VIDEO ||
-          key == XBMCK_LEFT ||
-          key == XBMCK_RIGHT)
+      int click;
+      int absX = gesturePoint.x;
+      int absY = gesturePoint.y;
+        
+      if (absX < 0)
+        absX *= -1;
+        
+      if (absY < 0)
+        absY *= -1;
+        
+      if (key == XBMCK_RIGHT || key == XBMCK_LEFT)
       {
-        int click;
-        int absX = gesturePoint.x;
-        int absY = gesturePoint.y;
-        
-        if (absX < 0)
-          absX *= -1;
-        
-        if (absY < 0)
-          absY *= -1;
-        
-        if (key == XBMCK_RIGHT || key == XBMCK_LEFT)
-        {
-          if (absX > 200)
-            click = 2;
-          else if (absX > 70)
-            click = 1;
-          else
-            click = 0;
-        }
+        if (absX > 200)
+          click = 2;
+        else if (absX > 70)
+          click = 1;
         else
-        {
-          if (absY > 200)
-            click = 2;
-          else if (absY > 100)
-            click = 1;
-          else
-            click = 0;
-        }
+          click = 0;
+      }
+      else
+      {
+        if (absY > 200)
+          click = 2;
+        else if (absY > 100)
+          click = 1;
+        else
+          click = 0;
+      }
         
-        if (m_clickResetPan || m_currentKey != key || click != m_currentClick)
+      if (m_clickResetPan || m_currentKey != key || click != m_currentClick)
+      {
+        [self stopKeyPressTimer];
+        [self sendKeyUp:m_currentKey];
+          
+        if (click != m_currentClick)
         {
-          [self stopKeyPressTimer];
-          [self sendKeyUp:m_currentKey];
+          m_currentClick = click;
+        }
+        if (m_currentKey == XBMCK_UNKNOWN || m_clickResetPan ||
+            ((m_currentKey == XBMCK_RIGHT && key == XBMCK_LEFT) ||
+             (m_currentKey == XBMCK_LEFT && key == XBMCK_RIGHT) ||
+             (m_currentKey == XBMCK_UP && key == XBMCK_DOWN) ||
+             (m_currentKey == XBMCK_DOWN && key == XBMCK_UP))
+            )
+        {
+          m_clickResetPan = false;
+          m_currentKey = key;
+        }
           
-          if (click != m_currentClick)
-          {
-            m_currentClick = click;
-          }
-          if (m_currentKey == XBMCK_UNKNOWN || m_clickResetPan ||
-              ((m_currentKey == XBMCK_RIGHT && key == XBMCK_LEFT) ||
-               (m_currentKey == XBMCK_LEFT && key == XBMCK_RIGHT) ||
-               (m_currentKey == XBMCK_UP && key == XBMCK_DOWN) ||
-               (m_currentKey == XBMCK_DOWN && key == XBMCK_UP))
-              )
-          {
-            m_clickResetPan = false;
-            m_currentKey = key;
-          }
-          
-          if (m_currentClick == 2)
-          {
-            //fast click
-            [self startKeyPressTimer:m_currentKey clickTime:0.20];
-            LOG("fast click");
-          }
-          else if (m_currentClick == 1)
-          {
-            // slow click
-            [self startKeyPressTimer:m_currentKey clickTime:0.80];
-            LOG("slow click");
-          }
+        if (m_currentClick == 2)
+        {
+          //fast click
+          [self startKeyPressTimer:m_currentKey clickTime:0.20];
+          LOG("fast click");
+        }
+        else if (m_currentClick == 1)
+        {
+          // slow click
+          [self startKeyPressTimer:m_currentKey clickTime:0.80];
+          LOG("slow click");
         }
       }
       break;
@@ -800,14 +794,8 @@ id objectFromVariant(const CVariant &data)
           default:
             break;
         }
-        // ignore UP/DOWN swipes while in full screen playback
-        if (g_windowManager.GetFocusedWindow() != WINDOW_FULLSCREEN_VIDEO ||
-            key == XBMCK_LEFT ||
-            key == XBMCK_RIGHT)
-        {
-          m_touchBeginSignaled = true;
-          [self startKeyPressTimer:key];
-        }
+        m_touchBeginSignaled = true;
+        [self startKeyPressTimer:key];
       }
       break;
     }
