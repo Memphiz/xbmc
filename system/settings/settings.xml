@@ -2440,6 +2440,7 @@
             <or>
               <condition>HAS_GL</condition>
               <condition>HAS_DX</condition>
+              <condition>HAS_GLES</condition>
             </or>
           </requirement>
           <level>3</level>
