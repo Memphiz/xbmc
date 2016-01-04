@@ -1037,7 +1037,7 @@ id objectFromVariant(const CVariant &data)
   // reply NO and we get restored to UIApplicationStateActive.
   if ([UIApplication sharedApplication].applicationState == UIApplicationStateInactive)
   {
-    NSURL *url = [NSURL URLWithString:@"mrmc://wakeup"];
+    NSURL *url = [NSURL URLWithString:@"kodi://wakeup"];
     [[UIApplication sharedApplication] openURL:url];
   }
 }
