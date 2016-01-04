@@ -1037,7 +1037,7 @@ id objectFromVariant(const CVariant &data)
   // reply NO and we get restored to UIApplicationStateActive.
   if ([UIApplication sharedApplication].applicationState == UIApplicationStateInactive)
   {
-    NSURL *url = [NSURL URLWithString:@"mrmc://wakeup"];
+    NSURL *url = [NSURL URLWithString:@"kodi://wakeup"];
     [[UIApplication sharedApplication] openURL:url];
   }
 }
@@ -1085,9 +1085,13 @@ id objectFromVariant(const CVariant &data)
   {
     CApplicationMessenger::GetInstance().SendMsg(TMSG_MEDIA_UNPAUSE);
     m_isPlayingBeforeInactive = NO;
+	[self disableScreenSaver];
   }
-
-  [self enableScreenSaver];
+  else
+  {
+    [self enableScreenSaver];
+  }
+  
 }
 
 - (void)becomeInactive
