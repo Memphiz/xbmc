@@ -176,12 +176,14 @@
 #include "win32util.h"
 #endif
 
-#ifdef TARGET_DARWIN_OSX
-#include "platform/darwin/osx/CocoaInterface.h"
-#include "platform/darwin/osx/XBMCHelper.h"
-#endif
-#ifdef TARGET_DARWIN
-#include "platform/darwin/DarwinUtils.h"
+#if defined(TARGET_DARWIN)
+  #if defined(TARGET_DARWIN_TVOS)
+    #include "platform/darwin/tvos/TVOSSettingsHandler.h"
+  #elif defined(TARGET_DARWIN_OSX)
+    #include "platform/darwin/osx/CocoaInterface.h"
+    #include "platform/darwin/osx/XBMCHelper.h"
+  #endif
+  #include "platform/darwin/DarwinUtils.h"
 #endif
 
 #ifdef HAS_DVD_DRIVE
@@ -668,13 +670,17 @@ bool CApplication::Create()
   // Create the Mouse, Keyboard, Remote, and Joystick devices
   // Initialize after loading settings to get joystick deadzone setting
   CInputManager::GetInstance().InitializeInputs();
-
+  
   // load the keyboard layouts
   if (!CKeyboardLayoutManager::GetInstance().Load())
   {
     CLog::Log(LOGFATAL, "CApplication::Create: Unable to load keyboard layouts");
     return false;
   }
+
+#if defined(TARGET_DARWIN_TVOS)
+  CTVOSInputSettings::GetInstance().Initialize();
+#endif
 
 #if defined(TARGET_DARWIN_OSX)
   // Configure and possible manually start the helper.
