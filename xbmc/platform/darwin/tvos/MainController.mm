@@ -1536,6 +1536,12 @@ int KODI_Run(bool renderGUI)
   
   [self enableScreenSaver];
   [self enableSystemSleep];
+  [self performSelectorOnMainThread:@selector(CallExit) withObject:nil  waitUntilDone:NO];
+}
+
+- (void) CallExit
+{
+  exit(0);
 }
 
 //--------------------------------------------------------------
