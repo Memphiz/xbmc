@@ -17,6 +17,7 @@ SRCS += darwin/DarwinUtils.mm
 SRCS += darwin/DictionaryUtils.mm
 SRCS += darwin/DarwinNSUserDefaults.mm
 SRCS += darwin/PlatformDarwin.cpp
+SRCS += darwin/NSData+GZIP.m
 SRCS += darwin/osx/HotKeyController.m
 SRCS += darwin/OSXGNUReplacements.c
 SRCS += darwin/osx/OSXTextInputResponder.mm
