@@ -1013,7 +1013,7 @@
 		DFC67B161C1C642800360EDE /* DVDDemuxCDDA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF52566B1732C1890094A464 /* DVDDemuxCDDA.cpp */; };
 		DFC67B171C1C642800360EDE /* DVDDemuxFFmpeg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E38E25C20D263DE200618676 /* DVDDemuxFFmpeg.cpp */; };
 		DFC67B181C1C642800360EDE /* DVDDemuxPVRClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8482902156CFED9005A996F /* DVDDemuxPVRClient.cpp */; };
-		DFC67B191C1C642800360EDE /* DVDDemuxShoutcast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E38E154D0D25F9F900618676 /* DVDDemuxShoutcast.cpp */; };
+		DFC67B191C1C642800360EDE /* (null) in Sources */ = {isa = PBXBuildFile; };
 		DFC67B1A1C1C642800360EDE /* DVDDemuxUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E38E154F0D25F9F900618676 /* DVDDemuxUtils.cpp */; };
 		DFC67B1B1C1C642800360EDE /* DVDDemuxVobsub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E33206370D5070AA00435CE3 /* DVDDemuxVobsub.cpp */; };
 		DFC67B1C1C1C642800360EDE /* DVDFactoryDemuxer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E38E25BF0D263DC100618676 /* DVDFactoryDemuxer.cpp */; };
@@ -1022,7 +1022,7 @@
 		DFC67B1F1C1C642800360EDE /* DVDInputStreamBluray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F58E293711FFC103006F4D46 /* DVDInputStreamBluray.cpp */; };
 		DFC67B201C1C642800360EDE /* DVDInputStreamFFmpeg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E38E155D0D25F9FA00618676 /* DVDInputStreamFFmpeg.cpp */; };
 		DFC67B211C1C642800360EDE /* DVDInputStreamFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E38E155F0D25F9FA00618676 /* DVDInputStreamFile.cpp */; };
-		DFC67B221C1C642800360EDE /* DVDInputStreamHttp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E38E15610D25F9FA00618676 /* DVDInputStreamHttp.cpp */; };
+		DFC67B221C1C642800360EDE /* (null) in Sources */ = {isa = PBXBuildFile; };
 		DFC67B231C1C642800360EDE /* DVDInputStreamMemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E38E15630D25F9FA00618676 /* DVDInputStreamMemory.cpp */; };
 		DFC67B241C1C642800360EDE /* DVDVideoCodec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F597B05A18A804E0005AADAE /* DVDVideoCodec.cpp */; };
 		DFC67B251C1C642800360EDE /* DVDInputStreamNavigator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E38E15650D25F9FA00618676 /* DVDInputStreamNavigator.cpp */; };
@@ -10084,11 +10084,6 @@
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				TargetAttributes = {
-					DFC67A9D1C1C642800360EDE = {
-						DevelopmentTeam = 5CWPLTTD9A;
-					};
-				};
 			};
 			buildConfigurationList = 1DEB924B08733DCA0010E9CD /* Build configuration list for PBXProject "Kodi" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -11603,7 +11598,7 @@
 				DFC67B161C1C642800360EDE /* DVDDemuxCDDA.cpp in Sources */,
 				DFC67B171C1C642800360EDE /* DVDDemuxFFmpeg.cpp in Sources */,
 				DFC67B181C1C642800360EDE /* DVDDemuxPVRClient.cpp in Sources */,
-				DFC67B191C1C642800360EDE /* DVDDemuxShoutcast.cpp in Sources */,
+				DFC67B191C1C642800360EDE /* (null) in Sources */,
 				DFC67B1A1C1C642800360EDE /* DVDDemuxUtils.cpp in Sources */,
 				DFC67B1B1C1C642800360EDE /* DVDDemuxVobsub.cpp in Sources */,
 				DFC67B1C1C1C642800360EDE /* DVDFactoryDemuxer.cpp in Sources */,
@@ -11612,7 +11607,7 @@
 				DFC67B1F1C1C642800360EDE /* DVDInputStreamBluray.cpp in Sources */,
 				DFC67B201C1C642800360EDE /* DVDInputStreamFFmpeg.cpp in Sources */,
 				DFC67B211C1C642800360EDE /* DVDInputStreamFile.cpp in Sources */,
-				DFC67B221C1C642800360EDE /* DVDInputStreamHttp.cpp in Sources */,
+				DFC67B221C1C642800360EDE /* (null) in Sources */,
 				DFC67B231C1C642800360EDE /* DVDInputStreamMemory.cpp in Sources */,
 				DFC67B241C1C642800360EDE /* DVDVideoCodec.cpp in Sources */,
 				DFC67B251C1C642800360EDE /* DVDInputStreamNavigator.cpp in Sources */,
