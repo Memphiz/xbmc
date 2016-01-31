@@ -1,1 +1,1 @@
-p8-platform https://github.com/Pulse-Eight/platform.git 38343e0acd6a636ac46139aa666aee4a8d1f13db
+p8-platform https://github.com/Pulse-Eight/platform.git 041a8c6cf4c44dbf0a8e295e3d3d2da13bbe0ad3
