@@ -45,6 +45,8 @@ public:
 
   CGUIWindowVideoNav(void);
   virtual ~CGUIWindowVideoNav(void);
+  
+  static CGUIWindowVideoNav &GetInstance();
 
   virtual bool OnAction(const CAction &action) override;
   virtual bool OnMessage(CGUIMessage& message) override;
@@ -59,6 +61,11 @@ public:
    */
   static void LoadVideoInfo(CFileItemList &items, CVideoDatabase &database, bool allowReplaceLabels = true);
 
+  /*! \brief Show the video info dialog for the given file item
+   \param item the fileitem the video info should be shown for
+   */
+  static void ShowVideoInfo(CFileItem &item);
+  
 protected:
   /*! \brief Load video information from the database for these items
    Useful for grabbing information for file listings, from watched status to full metadata

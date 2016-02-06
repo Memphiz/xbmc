@@ -132,6 +132,7 @@
   \sa HELPERS::DialogYesNoMessage
 */
 #define TMSG_GUI_DIALOG_YESNO             TMSG_MASK_WINDOWMANAGER + 8
+#define TMSG_GUI_SHOW_VIDEO_INFO          TMSG_MASK_WINDOWMANAGER + 9
 
 
 #define TMSG_CALLBACK                     800

@@ -923,6 +923,14 @@ void CGUIWindowManager::OnApplicationMessage(ThreadMessage* pMsg)
       delete message;
     }
     break;
+      
+  case TMSG_GUI_SHOW_VIDEO_INFO:
+    if (pMsg->lpVoid)
+    {
+      CFileItem *item = (CFileItem *)pMsg->lpVoid;
+      CGUIWindowVideoNav::ShowVideoInfo(*item);
+    }
+    break;
 
   case TMSG_GUI_DIALOG_YESNO:
     if (!pMsg->lpVoid && pMsg->param1 < 0 && pMsg->param2 < 0)
