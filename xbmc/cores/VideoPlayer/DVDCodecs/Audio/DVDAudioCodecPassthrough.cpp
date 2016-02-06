@@ -84,6 +84,14 @@ bool CDVDAudioCodecPassthrough::Open(CDVDStreamInfo &hints, CDVDCodecOptions &op
     // only get the dts core from the parser if we don't support dtsHD
     m_parser.SetCoreOnly(true);
   }
+  
+#if defined(TARGET_DARWIN_TVOS)
+  // tvos doesn't like 44100 dts passthrough even if it generally can do 44100 samplerate
+  if (hints.codec == AV_CODEC_ID_DTS && hints.samplerate != 48000)
+  {
+    ret = false;
+  }
+#endif
 
   m_dataSize = 0;
   m_bufferSize = 0;
