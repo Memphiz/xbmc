@@ -364,6 +364,7 @@ public:
   }
 
   bool IsAppFocused() const { return m_AppFocused; }
+  bool IsAppInitialized() const { return !m_bInitializing; }
 
   void Minimize();
   bool ToggleDPMS(bool manual);
