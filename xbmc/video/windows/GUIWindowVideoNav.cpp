@@ -85,6 +85,12 @@ CGUIWindowVideoNav::~CGUIWindowVideoNav(void)
 {
 }
 
+CGUIWindowVideoNav &CGUIWindowVideoNav::GetInstance()
+{
+  static CGUIWindowVideoNav sWNav;
+  return sWNav;
+}
+
 bool CGUIWindowVideoNav::OnAction(const CAction &action)
 {
   if (action.GetID() == ACTION_TOGGLE_WATCHED)
@@ -1294,3 +1300,10 @@ bool CGUIWindowVideoNav::ApplyWatchedFilter(CFileItemList &items)
 
   return listchanged;
 }
+
+void CGUIWindowVideoNav::ShowVideoInfo(CFileItem &item)
+{
+  ADDON::ScraperPtr info;
+  CGUIWindowVideoNav::GetInstance().OnItemInfo(&item, info);
+}
+
