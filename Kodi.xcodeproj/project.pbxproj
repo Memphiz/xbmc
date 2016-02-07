@@ -2021,6 +2021,8 @@
 		DFDBEECD1C1770BC0051C447 /* CocoaInterface.mm in Sources */ = {isa = PBXBuildFile; fileRef = DFDBEECC1C1770BC0051C447 /* CocoaInterface.mm */; };
 		DFDE5D511AE5658200EE53AD /* PictureScalingAlgorithm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFDE5D4F1AE5658200EE53AD /* PictureScalingAlgorithm.cpp */; };
 		DFDE5D521AE5658200EE53AD /* PictureScalingAlgorithm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFDE5D4F1AE5658200EE53AD /* PictureScalingAlgorithm.cpp */; };
+		DFE076B31C674B9400D45AFF /* tvosShared.m in Sources */ = {isa = PBXBuildFile; fileRef = DFE076B21C674B9400D45AFF /* tvosShared.m */; };
+		DFE076B41C674BB800D45AFF /* tvosShared.m in Sources */ = {isa = PBXBuildFile; fileRef = DFE076B21C674B9400D45AFF /* tvosShared.m */; };
 		DFE4095B17417FDF00473BD9 /* LegacyPathTranslation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFE4095917417FDF00473BD9 /* LegacyPathTranslation.cpp */; };
 		DFE4BE001C660D4B0048EB03 /* DVDDemuxClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7CFC08361C5BA7D0000E5E73 /* DVDDemuxClient.cpp */; };
 		DFE4BE011C660D8F0048EB03 /* MusicFileItemListModifier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AC167B41C5ED478004F0C29 /* MusicFileItemListModifier.cpp */; };
@@ -4944,6 +4946,8 @@
 		DFDBEECC1C1770BC0051C447 /* CocoaInterface.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CocoaInterface.mm; sourceTree = "<group>"; };
 		DFDE5D4F1AE5658200EE53AD /* PictureScalingAlgorithm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PictureScalingAlgorithm.cpp; sourceTree = "<group>"; };
 		DFDE5D501AE5658200EE53AD /* PictureScalingAlgorithm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PictureScalingAlgorithm.h; sourceTree = "<group>"; };
+		DFE076B11C674B9400D45AFF /* tvosShared.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tvosShared.h; sourceTree = "<group>"; };
+		DFE076B21C674B9400D45AFF /* tvosShared.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = tvosShared.m; sourceTree = "<group>"; };
 		DFE4095917417FDF00473BD9 /* LegacyPathTranslation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LegacyPathTranslation.cpp; sourceTree = "<group>"; };
 		DFE4095A17417FDF00473BD9 /* LegacyPathTranslation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LegacyPathTranslation.h; sourceTree = "<group>"; };
 		DFE4BE041C661C5F0048EB03 /* AnnounceReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnnounceReceiver.h; sourceTree = "<group>"; };
@@ -8321,6 +8325,8 @@
 				DFC67A8B1C1C627B00360EDE /* MainKeyboardView.mm */,
 				DFC64EC21C46EE3D001210C3 /* TVOSSettingsHandler.h */,
 				DFC64EC31C46EE3D001210C3 /* TVOSSettingsHandler.mm */,
+				DFE076B11C674B9400D45AFF /* tvosShared.h */,
+				DFE076B21C674B9400D45AFF /* tvosShared.m */,
 				DFE4BE071C662A660048EB03 /* TVOSTopShelf.h */,
 				DFE4BE081C662A660048EB03 /* TVOSTopShelf.mm */,
 			);
@@ -11613,6 +11619,7 @@
 				DFC67AAD1C1C642800360EDE /* filcreat.cpp in Sources */,
 				DFC67AAE1C1C642800360EDE /* file.cpp in Sources */,
 				DFC67AAF1C1C642800360EDE /* filefn.cpp in Sources */,
+				DFE076B31C674B9400D45AFF /* tvosShared.m in Sources */,
 				DFC67AB01C1C642800360EDE /* filestr.cpp in Sources */,
 				DFC67AB11C1C642800360EDE /* find.cpp in Sources */,
 				DFC67AB21C1C642800360EDE /* getbits.cpp in Sources */,
@@ -12669,6 +12676,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DFE076B41C674BB800D45AFF /* tvosShared.m in Sources */,
 				DFE4BE261C6635300048EB03 /* ServiceProvider.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
