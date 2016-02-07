@@ -35,6 +35,6 @@
   } else {
     bundleID = [NSBundle mainBundle].bundleIdentifier;
   }
-  return [[@"group." stringByAppendingString:bundleID] stringByAppendingString:@".shared"];
+  return [@"group." stringByAppendingString:bundleID];
 }
 @end
