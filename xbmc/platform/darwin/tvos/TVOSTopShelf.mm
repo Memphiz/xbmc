@@ -22,6 +22,7 @@
 #import "system.h"
 
 #import "TVOSTopShelf.h"
+#import "tvosShared.h"
 
 #include "Application.h"
 #include "messaging/ApplicationMessenger.h"
@@ -65,12 +66,13 @@ CTVOSTopShelf &CTVOSTopShelf::GetInstance()
 void CTVOSTopShelf::SetTopShelfItems(CFileItemList& movies, CFileItemList& tv)
 {
   CVideoThumbLoader loader;
+  NSString *sharedID = [tvosShared getSharedID];
   NSMutableArray * movieArray = [[NSMutableArray alloc] init];
   NSMutableArray * tvArray = [[NSMutableArray alloc] init];
-  NSUserDefaults *shared = [[NSUserDefaults alloc] initWithSuiteName:@"group.org.xbmc.shared"];
+  NSUserDefaults *shared = [[NSUserDefaults alloc] initWithSuiteName:sharedID];
   
   NSFileManager* fileManager = [NSFileManager defaultManager];
-  NSURL* storeUrl = [fileManager containerURLForSecurityApplicationGroupIdentifier:@"group.org.xbmc.shared"];
+  NSURL* storeUrl = [fileManager containerURLForSecurityApplicationGroupIdentifier:sharedID];
   storeUrl = [storeUrl URLByAppendingPathComponent:@"Library" isDirectory:TRUE];
   storeUrl = [storeUrl URLByAppendingPathComponent:@"Caches" isDirectory:TRUE];
   storeUrl = [storeUrl URLByAppendingPathComponent:@"RA" isDirectory:TRUE];

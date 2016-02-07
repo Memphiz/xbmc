@@ -19,6 +19,7 @@
  */
 
 #import "ServiceProvider.h"
+#import "../tvosShared.h"
 
 @interface ServiceProvider ()
 
@@ -44,13 +45,14 @@
 
 - (NSArray *)topShelfItems
 {
-    NSMutableArray *topShelfItems = [[NSMutableArray alloc] init];;
-    NSUserDefaults *shared = [[NSUserDefaults alloc] initWithSuiteName:@"group.org.xbmc.shared"];
+  NSString *sharedID = [tvosShared getSharedID];
+    NSMutableArray *topShelfItems = [[NSMutableArray alloc] init];
+    NSUserDefaults *shared = [[NSUserDefaults alloc] initWithSuiteName:sharedID];
   
     TVContentIdentifier *wrapperIdentifier = [[TVContentIdentifier alloc] initWithIdentifier:@"shelf-wrapper" container:nil];
   
     NSFileManager* fileManager = [NSFileManager defaultManager];
-    NSURL* storeUrl = [fileManager containerURLForSecurityApplicationGroupIdentifier:@"group.org.xbmc.shared"];
+    NSURL* storeUrl = [fileManager containerURLForSecurityApplicationGroupIdentifier:sharedID];
     storeUrl = [storeUrl URLByAppendingPathComponent:@"Library" isDirectory:TRUE];
     storeUrl = [storeUrl URLByAppendingPathComponent:@"Caches" isDirectory:TRUE];
     storeUrl = [storeUrl URLByAppendingPathComponent:@"RA" isDirectory:TRUE];
