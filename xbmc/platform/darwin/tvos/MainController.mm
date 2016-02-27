@@ -1350,6 +1350,8 @@ MainController *g_xbmcController;
   while(!g_application.IsAppInitialized())
     usleep(50*1000);
 
+  g_Windowing.OnAppFocusChange(true);
+
   // when we come back, restore playing if we were.
   if (m_isPlayingBeforeInactive)
   {
@@ -1371,8 +1373,6 @@ MainController *g_xbmcController;
   PRINT_SIGNATURE();
   // stop background task (if running)
   [self disableBackGroundTask];
-
-  g_Windowing.OnAppFocusChange(true);
 
   [NSThread detachNewThreadSelector:@selector(enterForegroundDelayed:) toTarget:self withObject:nil];
 }
