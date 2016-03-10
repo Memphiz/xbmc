@@ -387,11 +387,7 @@ MainController *g_xbmcController;
       // menu is special.
       //  a) if at our home view, should return to atv home screen.
       //  b) if not, let it pass to us.
-      if (g_windowManager.GetActiveWindow() == WINDOW_HOME &&
-          g_windowManager.GetFocusedWindow() != WINDOW_DIALOG_FAVOURITES &&
-          g_windowManager.GetFocusedWindow() != WINDOW_DIALOG_CONTEXT_MENU &&
-          g_windowManager.GetFocusedWindow() != WINDOW_DIALOG_BUSY &&
-          g_windowManager.GetFocusedWindow() != WINDOW_DIALOG_VIDEO_INFO)
+      if (g_windowManager.GetFocusedWindow() == WINDOW_HOME)
         handled = NO;
       break;
 
