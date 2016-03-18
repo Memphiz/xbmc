@@ -139,6 +139,8 @@ bool CSMBDirectory::GetDirectory(const CURL& url, CFileItemList &items)
         {
           // make sure we use the authenticated path wich contains any default username
           const std::string strFullName = strAuth + smb.URLEncode(strFile);
+          if (strFullName.empty())
+            continue;
 
           lock.Enter();
 
@@ -327,6 +329,8 @@ bool CSMBDirectory::Exists(const CURL& url2)
   CURL url(url2);
   CPasswordManager::GetInstance().AuthenticateURL(url);
   std::string strFileName = smb.URLEncode(url);
+  if (strFileName.empty())
+    return false;
 
   struct stat info;
   if (smbc_stat(strFileName.c_str(), &info) != 0)
