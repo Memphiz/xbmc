@@ -1105,8 +1105,6 @@ MainController *g_xbmcController;
   [m_window makeKeyAndVisible];
   g_xbmcController = self;
 
-  CAnnounceReceiver::GetInstance()->Initialize();
-
   return self;
 }
 //--------------------------------------------------------------
@@ -1114,8 +1112,6 @@ MainController *g_xbmcController;
 {
   // stop background task (if running)
   [self disableBackGroundTask];
-
-  CAnnounceReceiver::GetInstance()->DeInitialize();
 
   [self stopAnimation];
   [m_glView release];
@@ -1434,6 +1430,9 @@ MainController *g_xbmcController;
     {
       CApplicationMessenger::GetInstance().PostMsg(TMSG_QUIT);
     }
+
+    CAnnounceReceiver::GetInstance()->DeInitialize();
+
     // wait for animation thread to die
     if ([m_animationThread isFinished] == NO)
       [m_animationThreadLock lockWhenCondition:TRUE];
@@ -1465,6 +1464,8 @@ int KODI_Run(bool renderGUI)
     ELOG(@"ERROR: Unable to create application. Exiting");
     return status;
   }
+  
+  CAnnounceReceiver::GetInstance()->Initialize();
   
   if (renderGUI && !g_application.CreateGUI())
   {
