@@ -20,7 +20,11 @@
 
 #include "GUIDialogKeyboardTouch.h"
 #if defined(TARGET_DARWIN_IOS)
-#include "platform/darwin/ios/IOSKeyboard.h"
+  #if defined(TARGET_DARWIN_TVOS)
+    #include "platform/darwin/tvos/MainKeyboard.h"
+  #else
+    #include "platform/darwin/ios/IOSKeyboard.h"
+  #endif
 #endif
 
 CGUIDialogKeyboardTouch::CGUIDialogKeyboardTouch()
@@ -34,7 +38,11 @@ CGUIDialogKeyboardTouch::CGUIDialogKeyboardTouch()
 bool CGUIDialogKeyboardTouch::ShowAndGetInput(char_callback_t pCallback, const std::string &initialString, std::string &typedString, const std::string &heading, bool bHiddenInput)
 {
 #if defined(TARGET_DARWIN_IOS)
-  m_keyboard.reset(new CIOSKeyboard());
+  #if defined(TARGET_DARWIN_TVOS)
+    m_keyboard.reset(new CMainKeyboard());
+  #else
+    m_keyboard.reset(new CIOSKeyboard());
+  #endif
 #endif
 
   if (!m_keyboard)
