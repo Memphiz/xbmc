@@ -225,7 +225,7 @@ enum AVPixelFormat CDVDVideoCodecFFmpeg::GetFormat(struct AVCodecContext * avctx
     }
 #endif
 
-#ifdef TARGET_DARWIN
+#if defined(TARGET_DARWIN) && !defined(TARGET_DARWIN_TVOS)
     if (*cur == AV_PIX_FMT_VIDEOTOOLBOX && CSettings::GetInstance().GetBool(CSettings::SETTING_VIDEOPLAYER_USEVTB))
     {
       VTB::CDecoder* dec = new VTB::CDecoder(ctx->m_processInfo);
