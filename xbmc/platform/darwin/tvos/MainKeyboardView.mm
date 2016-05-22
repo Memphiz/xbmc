@@ -20,7 +20,6 @@
 
 #define BOOL XBMC_BOOL
 #import "Application.h"
-#import "guilib/GUIWindowManager.h"
 #import "guilib/GUIKeyboardFactory.h"
 #import "threads/Event.h"
 #undef BOOL
@@ -151,19 +150,14 @@ static CEvent keyboardFinishedEvent;
     return;
   }
 
-  // emulate a modale dialog here
   // we are waiting on the user finishing the keyboard
-  // and have to process our app while doing that
-  // basicall what our GUIDialog does if called modal
-  while(!keyboardFinishedEvent.WaitMSec(500) && !g_application.m_bStop)
+  while(!keyboardFinishedEvent.WaitMSec(500))
   {
     if (NULL != _canceled && *_canceled)
     {
       [self deactivate];
       _canceled = NULL;
     }
-    // if we are not in xbmc main thread, ProcessRenderLoop() is nop.
-    g_windowManager.ProcessRenderLoop();
   }
 }
 

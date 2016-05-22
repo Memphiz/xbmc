@@ -62,7 +62,7 @@ bool CMainKeyboard::ShowAndGetInput(char_callback_t pCallback, const std::string
   if (!m_bCanceled)
   {
     [g_pTvosKeyboard setCancelFlag:&m_bCanceled];
-    [g_pTvosKeyboard activate]; // blocks and loops our application loop (like a modal dialog)
+    [g_pTvosKeyboard activate]; // blocks and shows keyboard
     // user is done - get resulted text and confirmation
     confirmed = g_pTvosKeyboard.isConfirmed;
     if (confirmed)
