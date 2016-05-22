@@ -288,7 +288,7 @@ MainController *g_xbmcController;
       window == WINDOW_FULLSCREEN_LIVETV ||
       window == WINDOW_FULLSCREEN_VIDEO ||
       window == WINDOW_FULLSCREEN_RADIO ||
-      (window >= WINDOW_SETTINGS_START && window <= WINDOW_SETTINGS_APPEARANCE)
+      (window >= WINDOW_SETTINGS_START && window <= WINDOW_SETTINGS_SERVICE)
       )
     return NO;
   
