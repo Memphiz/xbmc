@@ -32,10 +32,14 @@
 #include "windowing/WindowingFactory.h"
 #undef BOOL
 
-#define CA_MAX_CHANNELS 8
-static enum AEChannel CAChannelMap[CA_MAX_CHANNELS + 1] = {
-  AE_CH_FL , AE_CH_FR , AE_CH_LFE, AE_CH_FC , AE_CH_BL , AE_CH_BR , AE_CH_SL , AE_CH_SR ,
-  AE_CH_NULL
+#include <AudioToolbox/AudioToolbox.h>
+#import  <AVFoundation/AVFoundation.h>
+
+// need two channel maps, one for 6 or less
+// the other for > 6 channels.
+static enum AEChannel CAChannelMap[2][9] = {
+  { AE_CH_FL , AE_CH_FR , AE_CH_LFE, AE_CH_FC , AE_CH_BL , AE_CH_BR , AE_CH_NULL },
+  { AE_CH_FL , AE_CH_FR , AE_CH_LFE, AE_CH_FC , AE_CH_SL , AE_CH_SR , AE_CH_BL , AE_CH_BR , AE_CH_NULL }
 };
 
 static std::string getAudioRoute()
@@ -699,6 +703,15 @@ bool CAESinkDARWINIOS::Initialize(AEAudioFormat &format, std::string &device)
     audioFormat.mBytesPerFrame   = audioFormat.mChannelsPerFrame * (audioFormat.mBitsPerChannel >> 3);
     audioFormat.mBytesPerPacket  = audioFormat.mBytesPerFrame * audioFormat.mFramesPerPacket;
     audioFormat.mFormatFlags    |= kLinearPCMFormatFlagIsPacked;
+
+    // propagate the channel info, AE seems to get this right
+    CAEChannelInfo channel_info;
+    int channel_index = 0;
+    if (format.m_channelLayout.Count() > 6)
+      channel_index = 1;
+    for (size_t chan = 0; chan < format.m_channelLayout.Count(); ++chan)
+      channel_info += CAChannelMap[channel_index][chan];
+    format.m_channelLayout = channel_info;
   }
 
   std::string formatString;
