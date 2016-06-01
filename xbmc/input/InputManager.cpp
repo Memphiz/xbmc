@@ -295,31 +295,41 @@ bool CInputManager::ProcessEventServer(int windowId, float frameTime)
 
 void CInputManager::ProcessQueuedActions()
 {
-  std::vector<CAction> queuedActions;
+  std::vector<struct ActionWithSound> queuedActions;
   {
     CSingleLock lock(m_actionMutex);
     queuedActions.swap(m_queuedActions);
   }
 
-  for (const CAction& action : queuedActions)
-    g_application.OnAction(action);
+  for (auto& actionWithSound : queuedActions)
+  {
+    if (actionWithSound.playActionSound)
+    {
+      ExecuteInputAction(actionWithSound.action);
+    }
+    else
+    {
+      g_application.OnAction(actionWithSound.action);
+    }
+  }
 }
 
-void CInputManager::QueueAction(const CAction& action)
+void CInputManager::QueueAction(const CAction& action, bool shouldPlayActionSound)
 {
   CSingleLock lock(m_actionMutex);
+  struct ActionWithSound actionWithSound = {.action = action, .playActionSound = shouldPlayActionSound };
 
   // Avoid dispatching multiple analog actions per frame with the same ID
   if (action.IsAnalog())
   {
     m_queuedActions.erase(std::remove_if(m_queuedActions.begin(), m_queuedActions.end(),
-      [&action](const CAction& queuedAction)
+      [&actionWithSound](const struct ActionWithSound& queuedAction)
       {
-        return action.GetID() == queuedAction.GetID();
+        return actionWithSound.action.GetID() == queuedAction.action.GetID();
       }), m_queuedActions.end());
   }
 
-  m_queuedActions.push_back(action);
+  m_queuedActions.push_back(actionWithSound);
 }
 
 bool CInputManager::Process(int windowId, float frameTime)

@@ -91,7 +91,7 @@ public:
 
   /*! \brief Queue an action to be processed on the next call to Process()
    */
-  void QueueAction(const CAction& action);
+  void QueueAction(const CAction& action, bool shouldPlayActionSound = false);
 
   /*! \brief Process all inputs
    *
@@ -268,8 +268,13 @@ private:
 #if defined(HAS_EVENT_SERVER)
   std::map<std::string, std::map<int, float> > m_lastAxisMap;
 #endif
+  struct ActionWithSound
+  {
+    CAction action;
+    bool playActionSound;
+  };
 
-  std::vector<CAction> m_queuedActions;
+  std::vector<struct ActionWithSound> m_queuedActions;
   CCriticalSection     m_actionMutex;
 
   std::vector<KEYBOARD::IKeyboardHandler*> m_keyboardHandlers;
