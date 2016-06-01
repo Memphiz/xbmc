@@ -30,6 +30,8 @@
 #import "cores/AudioEngine/AEFactory.h"
 #import "guilib/GUIWindowManager.h"
 #import "input/Key.h"
+#import "input/ButtonTranslator.h"
+#import "input/InputManager.h"
 #import "interfaces/AnnouncementManager.h"
 #import "network/NetworkServices.h"
 #import "messaging/ApplicationMessenger.h"
@@ -83,6 +85,28 @@ MainController *g_xbmcController;
 #define NEW_REMOTE_HANDLING 0
 
 #pragma mark - internal key press methods
+- (void)sendButtonPressed:(int)buttonId
+{
+  int actionID;
+  std::string actionName;
+  
+  // Translate using custom controller translator.
+  if (CButtonTranslator::GetInstance().TranslateCustomControllerString(g_windowManager.GetActiveWindowID(), "SiriRemote", buttonId, actionID, actionName))
+  {
+    // break screensaver
+    g_application.ResetSystemIdleTimer();
+    g_application.ResetScreenSaver();
+    
+    // in case we wokeup the screensaver or screen - eat that action...
+    if (g_application.WakeUpScreenSaverAndDPMS())
+      return;
+    CInputManager::GetInstance().QueueAction(CAction(actionID, 1.0f, 0.0f, actionName), true);
+  }
+  else
+  {
+    CLog::Log(LOGDEBUG, "ERROR mapping customcontroller action. CustomController: %s %i", "SiriRemote", buttonId);
+  }
+}
 //--------------------------------------------------------------
 //--------------------------------------------------------------
 - (void)sendKeyDownUp:(XBMCKey)key
@@ -100,13 +124,6 @@ MainController *g_xbmcController;
 {
   XBMC_Event newEvent = {0};
   newEvent.type = XBMC_KEYDOWN;
-  newEvent.key.keysym.sym = key;
-  CWinEvents::MessagePush(&newEvent);
-}
-- (void)sendKeyUp:(XBMCKey)key
-{
-  XBMC_Event newEvent = {0};
-  newEvent.type = XBMC_KEYUP;
   newEvent.key.keysym.sym = key;
   CWinEvents::MessagePush(&newEvent);
 }
@@ -163,18 +180,21 @@ MainController *g_xbmcController;
 #define REPEATED_KEYPRESS_PAUSE_S 0.05
 //--------------------------------------------------------------
 
-- (void)startKeyPressTimer:(XBMCKey)keyId
+//- (void)startKeyPressTimer:(XBMCKey)keyId
+- (void)startKeyPressTimer:(int)keyId
 {
   [self startKeyPressTimer:keyId clickTime:REPEATED_KEYPRESS_PAUSE_S];
 }
 
-- (void)startKeyPressTimer:(XBMCKey)keyId clickTime:(NSTimeInterval)interval
+//- (void)startKeyPressTimer:(XBMCKey)keyId clickTime:(NSTimeInterval)interval
+- (void)startKeyPressTimer:(int)keyId clickTime:(NSTimeInterval)interval
 {
   //PRINT_SIGNATURE();
   if (self.pressAutoRepeatTimer != nil)
     [self stopKeyPressTimer];
 
-  [self sendKeyDown:keyId];
+  //[self sendKeyDown:keyId];
+  [self sendButtonPressed:keyId];
 
   NSNumber *number = [NSNumber numberWithInt:keyId];
   NSDate *fireDate = [NSDate dateWithTimeIntervalSinceNow:REPEATED_KEYPRESS_DELAY_S];
@@ -210,7 +230,8 @@ MainController *g_xbmcController;
     return;
 
   NSNumber *keyId = [theTimer userInfo];
-  [self sendKeyDown:(XBMCKey)[keyId intValue]];
+  //[self sendKeyDown:(XBMCKey)[keyId intValue]];
+  [self sendButtonPressed:[keyId intValue]];
 }
 
 #pragma mark - remote helpers
@@ -569,7 +590,8 @@ MainController *g_xbmcController;
 {
   self.m_holdCounter++;
   [self.m_holdTimer invalidate];
-  [self sendKeyDownUp:XBMCK_c];
+  //[self sendKeyDownUp:XBMCK_c];
+  [self sendButtonPressed:7];
 }
 //--------------------------------------------------------------
 - (void) activateKeyboard:(UIView *)view
@@ -596,10 +618,7 @@ MainController *g_xbmcController;
     case UIGestureRecognizerStateChanged:
       break;
     case UIGestureRecognizerStateEnded:
-      if (g_windowManager.GetFocusedWindow() == WINDOW_FULLSCREEN_VIDEO)
-        CApplicationMessenger::GetInstance().SendMsg(TMSG_MEDIA_STOP);
-      else
-        [self sendKeyDownUp:XBMCK_BACKSPACE];
+      [self sendButtonPressed:6];
       
       // start remote timeout
       [self startRemoteTimer];
@@ -624,13 +643,17 @@ MainController *g_xbmcController;
       if (self.m_holdCounter > 1)
       {
         [self.m_holdTimer invalidate];
-        [self sendKeyDownUp:XBMCK_c];
+        //[self sendKeyDownUp:XBMCK_c];
+        [self sendButtonPressed:7];
       }
       break;
     case UIGestureRecognizerStateEnded:
       [self.m_holdTimer invalidate];
       if (self.m_holdCounter < 1)
-        [self sendKeyDownUp:XBMCK_RETURN];
+      {
+        //[self sendKeyDownUp:XBMCK_RETURN];
+        [self sendButtonPressed:5];
+      }
       
       // start remote timeout
       [self startRemoteTimer];
@@ -649,7 +672,8 @@ MainController *g_xbmcController;
     case UIGestureRecognizerStateChanged:
       break;
     case UIGestureRecognizerStateEnded:
-      [self sendKeyDownUp:XBMCK_MEDIA_PLAY_PAUSE];
+      //[self sendKeyDownUp:XBMCK_MEDIA_PLAY_PAUSE];
+      [self sendButtonPressed:12];
       // start remote timeout
       [self startRemoteTimer];
       break;
@@ -664,13 +688,14 @@ MainController *g_xbmcController;
   switch (sender.state)
   {
     case UIGestureRecognizerStateBegan:
-      [self startKeyPressTimer:XBMCK_UP];
+      //[self startKeyPressTimer:XBMCK_UP];
+      [self startKeyPressTimer:1];
       break;
     case UIGestureRecognizerStateChanged:
       break;
     case UIGestureRecognizerStateEnded:
       [self stopKeyPressTimer];
-      [self sendKeyUp:XBMCK_UP];
+      //[self sendKeyUp:XBMCK_UP];
       
       // start remote timeout
       [self startRemoteTimer];
@@ -685,13 +710,14 @@ MainController *g_xbmcController;
   switch (sender.state)
   {
     case UIGestureRecognizerStateBegan:
-      [self startKeyPressTimer:XBMCK_DOWN];
+      //[self startKeyPressTimer:XBMCK_DOWN];
+      [self startKeyPressTimer:2];
       break;
     case UIGestureRecognizerStateChanged:
       break;
     case UIGestureRecognizerStateEnded:
       [self stopKeyPressTimer];
-      [self sendKeyUp:XBMCK_DOWN];
+      //[self sendKeyUp:XBMCK_DOWN];
       
       // start remote timeout
       [self startRemoteTimer];
@@ -706,13 +732,14 @@ MainController *g_xbmcController;
   switch (sender.state)
   {
     case UIGestureRecognizerStateBegan:
-      [self startKeyPressTimer:XBMCK_LEFT];
+      //[self startKeyPressTimer:XBMCK_LEFT];
+      [self startKeyPressTimer:3];
       break;
     case UIGestureRecognizerStateChanged:
       break;
     case UIGestureRecognizerStateEnded:
       [self stopKeyPressTimer];
-      [self sendKeyUp:XBMCK_LEFT];
+      //[self sendKeyUp:XBMCK_LEFT];
       
       // start remote timeout
       [self startRemoteTimer];
@@ -727,13 +754,14 @@ MainController *g_xbmcController;
   switch (sender.state)
   {
     case UIGestureRecognizerStateBegan:
-      [self startKeyPressTimer:XBMCK_RIGHT];
+      //[self startKeyPressTimer:XBMCK_RIGHT];
+      [self startKeyPressTimer:4];
       break;
     case UIGestureRecognizerStateChanged:
       break;
     case UIGestureRecognizerStateEnded:
       [self stopKeyPressTimer];
-      [self sendKeyUp:XBMCK_RIGHT];
+      //[self sendKeyUp:XBMCK_RIGHT];
       
       // start remote timeout
       [self startRemoteTimer];
@@ -747,28 +775,40 @@ MainController *g_xbmcController;
 - (IBAction)tapUpArrowPressed:(UIGestureRecognizer *)sender
 {
   if (!m_remoteIdleState)
-    [self sendKeyDownUp:XBMCK_UP];
+  {
+    [self sendButtonPressed:1];
+    //[self sendKeyDownUp:XBMCK_UP];
+  }
   [self startRemoteTimer];
 }
 //--------------------------------------------------------------
 - (IBAction)tapDownArrowPressed:(UIGestureRecognizer *)sender
 {
   if (!m_remoteIdleState)
-    [self sendKeyDownUp:XBMCK_DOWN];
+  {
+    //[self sendKeyDownUp:XBMCK_DOWN];
+    [self sendButtonPressed:2];
+  }
   [self startRemoteTimer];
 }
 //--------------------------------------------------------------
 - (IBAction)tapLeftArrowPressed:(UIGestureRecognizer *)sender
 {
   if (!m_remoteIdleState)
-    [self sendKeyDownUp:XBMCK_LEFT];
+  {
+    [self sendButtonPressed:3];
+    //[self sendKeyDownUp:XBMCK_LEFT];
+  }
   [self startRemoteTimer];
 }
 //--------------------------------------------------------------
 - (IBAction)tapRightArrowPressed:(UIGestureRecognizer *)sender
 {
   if (!m_remoteIdleState)
-    [self sendKeyDownUp:XBMCK_RIGHT];
+  {
+    //[self sendKeyDownUp:XBMCK_RIGHT];
+    [self sendButtonPressed:4];
+  }
   [self startRemoteTimer];
 }
 
@@ -833,9 +873,13 @@ MainController *g_xbmcController;
                 {
                   if ((ABS(m_lastGesturePoint.y - gesturePoint.y) > speed) || ABS(velocityY) > minVelocity )
                   {
-                    [self sendKeyDownUp:XBMCK_UP];
+                    //[self sendKeyDownUp:XBMCK_UP];
+                    [self sendButtonPressed:8];
                     if (ABS(velocityY) > minVelocity && [self shouldFastScroll])
-                      [self sendKeyDownUp:XBMCK_UP];
+                    {
+                      //[self sendKeyDownUp:XBMCK_UP];
+                      [self sendButtonPressed:8];
+                    }
                     m_lastGesturePoint = gesturePoint;
                   }
                   break;
@@ -844,9 +888,13 @@ MainController *g_xbmcController;
                 {
                   if ((ABS(m_lastGesturePoint.y - gesturePoint.y) > speed) || ABS(velocityY) > minVelocity)
                   {
-                    [self sendKeyDownUp:XBMCK_DOWN];
+                    //[self sendKeyDownUp:XBMCK_DOWN];
+                    [self sendButtonPressed:9];
                     if (ABS(velocityY) > minVelocity && [self shouldFastScroll])
-                      [self sendKeyDownUp:XBMCK_DOWN];
+                    {
+                      //[self sendKeyDownUp:XBMCK_DOWN];
+                      [self sendButtonPressed:9];
+                    }
                     m_lastGesturePoint = gesturePoint;
                   }
                   break;
@@ -856,9 +904,13 @@ MainController *g_xbmcController;
                   // add 80 px to slow left/right swipes, it matched up down better
                   if ((ABS(m_lastGesturePoint.x - gesturePoint.x) > speed+80) || ABS(velocityX) > minVelocity)
                   {
-                    [self sendKeyDownUp:XBMCK_LEFT];
+                    //[self sendKeyDownUp:XBMCK_LEFT];
+                    [self sendButtonPressed:10];
                     if (ABS(velocityX) > minVelocity && [self shouldFastScroll])
-                      [self sendKeyDownUp:XBMCK_LEFT];
+                    {
+                      //[self sendKeyDownUp:XBMCK_LEFT];
+                      [self sendButtonPressed:10];
+                    }
                     m_lastGesturePoint = gesturePoint;
                   }
                   break;
@@ -868,9 +920,13 @@ MainController *g_xbmcController;
                   // add 80 px to slow left/right swipes, it matched up down better
                   if ((ABS(m_lastGesturePoint.x - gesturePoint.x) > speed+80) || ABS(velocityX) > minVelocity)
                   {
-                    [self sendKeyDownUp:XBMCK_RIGHT];
+                    //[self sendKeyDownUp:XBMCK_RIGHT];
+                    [self sendButtonPressed:11];
                     if (ABS(velocityX) > minVelocity && [self shouldFastScroll])
-                      [self sendKeyDownUp:XBMCK_RIGHT];
+                    {
+                      //[self sendKeyDownUp:XBMCK_RIGHT];
+                      [self sendButtonPressed:11];
+                    }
                     m_lastGesturePoint = gesturePoint;
                   }
                   break;
@@ -952,7 +1008,7 @@ MainController *g_xbmcController;
               if (m_clickResetPan || m_currentKey != key || click != m_currentClick)
               {
                 [self stopKeyPressTimer];
-                [self sendKeyUp:m_currentKey];
+                //[self sendKeyUp:m_currentKey];
                 
                 if (click != m_currentClick)
                 {
@@ -983,27 +1039,28 @@ MainController *g_xbmcController;
                 }
               }
 #else
+              int keyId = 0;
               if (!m_touchBeginSignaled && m_touchDirection)
               {
                 switch (m_touchDirection)
                 {
                   case UISwipeGestureRecognizerDirectionRight:
-                    key = XBMCK_RIGHT;
+                    keyId = 11;
                     break;
                   case UISwipeGestureRecognizerDirectionLeft:
-                    key = XBMCK_LEFT;
+                    keyId = 10;
                     break;
                   case UISwipeGestureRecognizerDirectionUp:
-                    key = XBMCK_UP;
+                    keyId = 8;
                     break;
                   case UISwipeGestureRecognizerDirectionDown:
-                    key = XBMCK_DOWN;
+                    keyId = 9;
                     break;
                   default:
                     break;
                 }
                 m_touchBeginSignaled = true;
-                [self startKeyPressTimer:key];
+                [self startKeyPressTimer:keyId];
 #endif
             }
             break;
@@ -1018,7 +1075,7 @@ MainController *g_xbmcController;
               m_touchBeginSignaled = false;
               m_touchDirection = NULL;
               [self stopKeyPressTimer];
-              [self sendKeyUp:key];
+              //[self sendKeyUp:key];
             }
 #endif
             // start remote idle timer
@@ -1043,16 +1100,20 @@ MainController *g_xbmcController;
       switch ([sender direction])
       {
         case UISwipeGestureRecognizerDirectionRight:
-          [self sendKeyDownUp:XBMCK_RIGHT];
+          //[self sendKeyDownUp:XBMCK_RIGHT];
+          [self sendButtonPressed:11];
           break;
         case UISwipeGestureRecognizerDirectionLeft:
-          [self sendKeyDownUp:XBMCK_LEFT];
+          //[self sendKeyDownUp:XBMCK_LEFT];
+          [self sendButtonPressed:10];
           break;
         case UISwipeGestureRecognizerDirectionUp:
-          [self sendKeyDownUp:XBMCK_UP];
+          //[self sendKeyDownUp:XBMCK_UP];
+          [self sendButtonPressed:8];
           break;
         case UISwipeGestureRecognizerDirectionDown:
-          [self sendKeyDownUp:XBMCK_DOWN];
+          //[self sendKeyDownUp:XBMCK_DOWN];
+          [self sendButtonPressed:9];
           break;
       }
 #endif
@@ -1559,33 +1620,25 @@ int KODI_Run(bool renderGUI)
         CApplicationMessenger::GetInstance().PostMsg(TMSG_GUI_ACTION, WINDOW_INVALID, -1, static_cast<void*>(new CAction(ACTION_PLAYER_PLAYPAUSE)));
         break;
       case UIEventSubtypeRemoteControlPlay:
-        CApplicationMessenger::GetInstance().PostMsg(TMSG_GUI_ACTION, WINDOW_INVALID, -1, static_cast<void*>(new CAction(ACTION_PLAYER_PLAY)));
+        [self sendButtonPressed:13];
         break;
       case UIEventSubtypeRemoteControlPause:
-        // ACTION_PAUSE sometimes cause unpause, use MediaPauseIfPlaying to make sure pause only
-        //CApplicationMessenger::GetInstance().SendMsg(TMSG_MEDIA_PAUSE);
-        // warning, something is wacky, in tvOS we only get this if play/pause button is pushed
-        // the playPausePressed method should be getting called and it does, sometimes. WTF ?
-        CApplicationMessenger::GetInstance().PostMsg(TMSG_GUI_ACTION, WINDOW_INVALID, -1, static_cast<void*>(new CAction(ACTION_PLAYER_PLAYPAUSE)));
+        [self sendButtonPressed:14];
         break;
       case UIEventSubtypeRemoteControlStop:
-        CApplicationMessenger::GetInstance().PostMsg(TMSG_MEDIA_STOP);
+        [self sendButtonPressed:15];
         break;
       case UIEventSubtypeRemoteControlNextTrack:
-        CApplicationMessenger::GetInstance().PostMsg(TMSG_GUI_ACTION, WINDOW_INVALID, -1, static_cast<void*>(new CAction(ACTION_NEXT_ITEM)));
+        [self sendButtonPressed:16];
         break;
       case UIEventSubtypeRemoteControlPreviousTrack:
-        CApplicationMessenger::GetInstance().PostMsg(TMSG_GUI_ACTION, WINDOW_INVALID, -1, static_cast<void*>(new CAction(ACTION_PREV_ITEM)));
+        [self sendButtonPressed:17];
         break;
       case UIEventSubtypeRemoteControlBeginSeekingForward:
-        // use 4X speed forward.
-        CApplicationMessenger::GetInstance().PostMsg(TMSG_GUI_ACTION, WINDOW_INVALID, -1, static_cast<void*>(new CAction(ACTION_PLAYER_FORWARD)));
-        CApplicationMessenger::GetInstance().PostMsg(TMSG_GUI_ACTION, WINDOW_INVALID, -1, static_cast<void*>(new CAction(ACTION_PLAYER_FORWARD)));
+        [self sendButtonPressed:18];
         break;
       case UIEventSubtypeRemoteControlBeginSeekingBackward:
-        // use 4X speed rewind.
-        CApplicationMessenger::GetInstance().PostMsg(TMSG_GUI_ACTION, WINDOW_INVALID, -1, static_cast<void*>(new CAction(ACTION_PLAYER_REWIND)));
-        CApplicationMessenger::GetInstance().PostMsg(TMSG_GUI_ACTION, WINDOW_INVALID, -1, static_cast<void*>(new CAction(ACTION_PLAYER_REWIND)));
+        [self sendButtonPressed:19];
         break;
       case UIEventSubtypeRemoteControlEndSeekingForward:
       case UIEventSubtypeRemoteControlEndSeekingBackward:
