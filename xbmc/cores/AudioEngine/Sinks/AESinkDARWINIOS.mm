@@ -35,11 +35,16 @@
 #include <AudioToolbox/AudioToolbox.h>
 #import  <AVFoundation/AVFoundation.h>
 
-// need two channel maps, one for 6 or less
-// the other for > 6 channels.
-static enum AEChannel CAChannelMap[2][9] = {
+enum CAChannelIndex {
+  CAChannel_PCM_6CHAN = 0,
+  CAChannel_PCM_8CHAN = 1,
+  CAChannel_PCM_DD5_1 = 2,
+};
+
+static enum AEChannel CAChannelMap[3][9] = {
   { AE_CH_FL , AE_CH_FR , AE_CH_LFE, AE_CH_FC , AE_CH_BL , AE_CH_BR , AE_CH_NULL },
-  { AE_CH_FL , AE_CH_FR , AE_CH_LFE, AE_CH_FC , AE_CH_SL , AE_CH_SR , AE_CH_BL , AE_CH_BR , AE_CH_NULL }
+  { AE_CH_FL , AE_CH_FR , AE_CH_LFE, AE_CH_FC , AE_CH_SL , AE_CH_SR , AE_CH_BL , AE_CH_BR , AE_CH_NULL },
+  { AE_CH_FL , AE_CH_FC , AE_CH_FR , AE_CH_BL , AE_CH_BR , AE_CH_LFE, AE_CH_NULL },
 };
 
 static std::string getAudioRoute()
@@ -70,18 +75,8 @@ static void dumpAVAudioSessionProperties()
   // if 6, then audio is set to Digial Dolby 5.1 OR hdmi path detected sink can only handle 6 channels.
   // if 8, then audio is set to Best Quality AND hdmi path detected sink can handle 8 channels.
   CLog::Log(LOGNOTICE, "%s maximumOutputNumberOfChannels %ld", __PRETTY_FUNCTION__, (long)[mySession maximumOutputNumberOfChannels]);
-  /*
-  NSArray *currentOutputs = mySession.currentRoute.outputs;
-  int count_out = [currentOutputs count];
-  for (int k = 0; k < count_out; k++)
-  {
-    AVAudioSessionPortDescription *portDesc = [currentOutputs objectAtIndex:k];
-    NSLog(@"dumpAVAudioSessionProperties : AVAudioSessionPortDescription, %@", portDesc);
-    for (AVAudioSessionChannelDescription *channel in portDesc.channels)
-      NSLog(@"dumpAVAudioSessionProperties : AVAudioSessionChannelDescription, %@", channel.channelName);
-  }
-  NSLog(@"dumpAVAudioSessionProperties : AVAudioSessionRouteChangeReasonNewDeviceAvailable, output count = %d", count_out);
-  */
+
+  //CDarwinUtils::DumpAudioDescriptions(__PRETTY_FUNCTION__);
 }
 
 static void setAVAudioSessionProperties(NSTimeInterval bufferseconds, double samplerate, int channels)
@@ -561,11 +556,10 @@ static void EnumerateDevices(AEDeviceInfoList &list)
 
   // add channel info
   UInt32 maxChannels = [[AVAudioSession sharedInstance] maximumOutputNumberOfChannels];
-  for (UInt32 chan = 0; chan < maxChannels; ++chan)
-  {
-    if (!device.m_channels.HasChannel(CAChannelMap[chan]))
-      device.m_channels += CAChannelMap[chan];
-  }
+  if (maxChannels > 6)
+    device.m_channels = AE_CH_LAYOUT_7_1;
+  else
+    device.m_channels = AE_CH_LAYOUT_5_1;
 
   CLog::Log(LOGDEBUG, "EnumerateDevices:Device(%s)" , device.m_deviceName.c_str());
 
@@ -670,12 +664,6 @@ bool CAESinkDARWINIOS::Initialize(AEAudioFormat &format, std::string &device)
       audioFormat.mSampleRate = 48000;
       break;
   }
-
-  // propagate the channel info, AE seems to get this right
-  CAEChannelInfo channel_info;
-  for (size_t chan = 0; chan < format.m_channelLayout.Count(); ++chan)
-    channel_info += CAChannelMap[chan];
-  format.m_channelLayout = channel_info;
   
   if (passthrough)
   {
@@ -704,11 +692,21 @@ bool CAESinkDARWINIOS::Initialize(AEAudioFormat &format, std::string &device)
     audioFormat.mBytesPerPacket  = audioFormat.mBytesPerFrame * audioFormat.mFramesPerPacket;
     audioFormat.mFormatFlags    |= kLinearPCMFormatFlagIsPacked;
 
-    // propagate the channel info, AE seems to get this right
     CAEChannelInfo channel_info;
-    int channel_index = 0;
-    if (format.m_channelLayout.Count() > 6)
-      channel_index = 1;
+    CAChannelIndex channel_index = CAChannel_PCM_6CHAN;
+#if defined(TARGET_DARWIN_TVOS)
+    UInt32 maxChannels = [[AVAudioSession sharedInstance] maximumOutputNumberOfChannels];
+    if (maxChannels == 6 && format.m_channelLayout.Count() == 6)
+    {
+      // if 6, then audio is set to Digial Dolby 5.1, need to use DD mapping
+      channel_index = CAChannel_PCM_DD5_1;
+    }
+    else
+#endif
+    {
+      if (format.m_channelLayout.Count() > 6)
+        channel_index = CAChannel_PCM_8CHAN;
+    }
     for (size_t chan = 0; chan < format.m_channelLayout.Count(); ++chan)
       channel_info += CAChannelMap[channel_index][chan];
     format.m_channelLayout = channel_info;
