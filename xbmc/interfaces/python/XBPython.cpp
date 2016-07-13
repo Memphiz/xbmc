@@ -581,6 +581,10 @@ bool XBPython::OnScriptInitialized(ILanguageInvoker *invoker)
       CLog::Log(LOGDEBUG, "PYTHONHOME -> %s", CSpecialProtocol::TranslatePath("special://frameworks").c_str());
       CLog::Log(LOGDEBUG, "PYTHONPATH -> %s", CSpecialProtocol::TranslatePath("special://frameworks").c_str());
     }
+
+#if defined(TARGET_DARWIN)
+    setenv("SSL_CERT_FILE", CSpecialProtocol::TranslatePath("special://xbmc/system/certs/cacert.pem").c_str(), 1);
+#endif
 #elif defined(TARGET_WINDOWS)
     // because the third party build of python is compiled with vs2008 we need
     // a hack to set the PYTHONPATH
