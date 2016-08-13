@@ -125,7 +125,6 @@ typedef NS_ENUM(NSUInteger, UIPanGestureRecognizerDirection)
 - (void) setSiriRemote:(BOOL)enable;
 - (void) setRemoteIdleTimeout:(int)timeout;
 - (void) setShouldRemoteIdle:(BOOL)idle;
-- (void) setSiriRemoteOSDSwipes:(BOOL)enable;
 
 - (NSArray<UIScreenMode *> *) availableScreenModes:(UIScreen*) screen;
 - (UIScreenMode*) preferredScreenMode:(UIScreen*) screen;

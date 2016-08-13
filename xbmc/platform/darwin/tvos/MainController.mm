@@ -78,7 +78,6 @@ MainController *g_xbmcController;
 @synthesize m_remoteIdleState;
 @synthesize m_remoteIdleTimeout;
 @synthesize m_shouldRemoteIdle;
-@synthesize m_RemoteOSDSwipes;
 @synthesize m_touchDirection;
 @synthesize m_touchBeginSignaled;
 
@@ -317,22 +316,6 @@ MainController *g_xbmcController;
 }
 
 //--------------------------------------------------------------
--(BOOL) shouldOSDScroll
-{
-  // we might not want to scroll in below windows, fullscreen video playback is one
-  int window = g_windowManager.GetActiveWindow();
-  
-  if (m_RemoteOSDSwipes &&
-      (window == WINDOW_FULLSCREEN_LIVETV ||
-      window == WINDOW_FULLSCREEN_VIDEO ||
-      window == WINDOW_FULLSCREEN_RADIO
-      ))
-    return NO;
-  
-  return YES;
-}
-
-//--------------------------------------------------------------
 - (void)setSiriRemote:(BOOL)enable
 {
   m_mimicAppleSiri = enable;
@@ -351,14 +334,6 @@ MainController *g_xbmcController;
   m_shouldRemoteIdle = idle;
   [self startRemoteTimer];
 }
-
-- (void)setSiriRemoteOSDSwipes:(BOOL)enable
-{
-  //PRINT_SIGNATURE();
-  m_RemoteOSDSwipes = enable;
-}
-
-
 //--------------------------------------------------------------
 //--------------------------------------------------------------
 #pragma mark - gesture methods
@@ -821,8 +796,6 @@ MainController *g_xbmcController;
     {
       if (m_mimicAppleSiri)
       {
-        if ([self shouldOSDScroll])
-        {
           static UIPanGestureRecognizerDirection direction = UIPanGestureRecognizerDirectionUndefined;
           // speed       == how many clicks full swipe will give us(1000x1000px)
           // minVelocity == min velocity to trigger fast scroll, add this to settings?
@@ -948,7 +921,6 @@ MainController *g_xbmcController;
             default:
               break;
           }
-        }
       }
       else // dont mimic apple siri remote
       {
