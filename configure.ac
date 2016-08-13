@@ -2225,7 +2225,6 @@ OUTPUT_FILES="Makefile \
     xbmc/platform/darwin/tvos/Info.plist \
     xbmc/platform/darwin/tvos/TopShelf/Info.plist \
     project/cmake/KodiConfig.cmake \
-    project/cmake/XBMCConfig.cmake \
     tools/android/packaging/xbmc/AndroidManifest.xml \
     tools/android/packaging/Makefile \
     tools/android/packaging/xbmc/src/org/xbmc/kodi/Splash.java \
