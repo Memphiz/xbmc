@@ -1010,6 +1010,16 @@
 		DF80843E1C79DF0400A9C77C /* AddonBuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A999F1B1C67B77600E4E0D5 /* AddonBuilder.cpp */; };
 		DF830D0C15BB260C00602BE6 /* GUIDialogKeyboardGeneric.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF830D0A15BB260C00602BE6 /* GUIDialogKeyboardGeneric.cpp */; };
 		DF830D1215BB262700602BE6 /* GUIKeyboardFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF830D0F15BB262700602BE6 /* GUIKeyboardFactory.cpp */; };
+		DF8458251D6CBA1E001A2050 /* ActiveAEFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7CE5D0B21D37EB6900211428 /* ActiveAEFilter.cpp */; };
+		DF8458261D6CBA28001A2050 /* RumbleGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6815C13F1CC7BADB000DB91A /* RumbleGenerator.cpp */; };
+		DF8458271D6CBA30001A2050 /* DriverReceiving.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6861B9E81CC248EE00F62655 /* DriverReceiving.cpp */; };
+		DF8458281D6CBA46001A2050 /* Platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF0D9F4B1D63931F006A7DBB /* Platform.cpp */; settings = {COMPILER_FLAGS = "-DPLATFORM_OVERRIDE"; }; };
+		DF8458291D6CBA47001A2050 /* Platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF0D9F4B1D63931F006A7DBB /* Platform.cpp */; settings = {COMPILER_FLAGS = "-DPLATFORM_OVERRIDE"; }; };
+		DF84582A1D6CBA4E001A2050 /* PlatformDarwin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF8E55951D5F1D7000FD2BA3 /* PlatformDarwin.cpp */; };
+		DF84582B1D6CBA4E001A2050 /* PlatformDarwin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF8E55951D5F1D7000FD2BA3 /* PlatformDarwin.cpp */; };
+		DF84582E1D6CBA5A001A2050 /* PlatformDarwinTVOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF84582D1D6CBA5A001A2050 /* PlatformDarwinTVOS.cpp */; };
+		DF84582F1D6CBA5F001A2050 /* PlatformDarwinTVOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF84582D1D6CBA5A001A2050 /* PlatformDarwinTVOS.cpp */; };
+		DF8458301D6CBBEE001A2050 /* GUIFeatureControls.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68B7E5E61D5FA9B300A5AEC0 /* GUIFeatureControls.cpp */; };
 		DF89901C1709BB2D00B35C21 /* MediaSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF8990161709BB2D00B35C21 /* MediaSettings.cpp */; };
 		DF89901D1709BB2D00B35C21 /* MediaSourceSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF8990181709BB2D00B35C21 /* MediaSourceSettings.cpp */; };
 		DF89901E1709BB2D00B35C21 /* SkinSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF89901A1709BB2D00B35C21 /* SkinSettings.cpp */; };
@@ -5032,6 +5042,7 @@
 		DF830D0E15BB262700602BE6 /* GUIKeyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GUIKeyboard.h; sourceTree = "<group>"; };
 		DF830D0F15BB262700602BE6 /* GUIKeyboardFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GUIKeyboardFactory.cpp; sourceTree = "<group>"; };
 		DF830D1015BB262700602BE6 /* GUIKeyboardFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GUIKeyboardFactory.h; sourceTree = "<group>"; };
+		DF84582D1D6CBA5A001A2050 /* PlatformDarwinTVOS.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PlatformDarwinTVOS.cpp; sourceTree = "<group>"; };
 		DF8990161709BB2D00B35C21 /* MediaSettings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MediaSettings.cpp; sourceTree = "<group>"; };
 		DF8990171709BB2D00B35C21 /* MediaSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MediaSettings.h; sourceTree = "<group>"; };
 		DF8990181709BB2D00B35C21 /* MediaSourceSettings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MediaSourceSettings.cpp; sourceTree = "<group>"; };
@@ -8420,6 +8431,7 @@
 		DF0D9F4E1D63961B006A7DBB /* overrides */ = {
 			isa = PBXGroup;
 			children = (
+				DF84582C1D6CBA5A001A2050 /* tvos */,
 				DF0D9F521D639893006A7DBB /* ios */,
 				DF0D9F4F1D63961B006A7DBB /* osx */,
 			);
@@ -8711,6 +8723,14 @@
 				DF6F52AD1AF6D03F001BC57D /* dacp.h */,
 			);
 			path = dacp;
+			sourceTree = "<group>";
+		};
+		DF84582C1D6CBA5A001A2050 /* tvos */ = {
+			isa = PBXGroup;
+			children = (
+				DF84582D1D6CBA5A001A2050 /* PlatformDarwinTVOS.cpp */,
+			);
+			path = tvos;
 			sourceTree = "<group>";
 		};
 		DF91E9251C0A1C610011084D /* osx */ = {
@@ -11378,6 +11398,7 @@
 				E38E206A0D25F9FD00618676 /* DirectoryNodeSeasons.cpp in Sources */,
 				E38E206C0D25F9FD00618676 /* DirectoryNodeTitleMovies.cpp in Sources */,
 				DF14CF7E1A77782E00396CC9 /* InputManager.cpp in Sources */,
+				DF84582E1D6CBA5A001A2050 /* PlatformDarwinTVOS.cpp in Sources */,
 				E38E206D0D25F9FD00618676 /* DirectoryNodeTitleMusicVideos.cpp in Sources */,
 				E38E206E0D25F9FD00618676 /* DirectoryNodeTitleTvShows.cpp in Sources */,
 				E38E206F0D25F9FD00618676 /* DirectoryNodeTvShowsOverview.cpp in Sources */,
@@ -12475,6 +12496,7 @@
 				DFC67B131C1C642800360EDE /* DVDVideoPPFFmpeg.cpp in Sources */,
 				DFC67B141C1C642800360EDE /* DVDDemux.cpp in Sources */,
 				DFC67B151C1C642800360EDE /* DVDDemuxBXA.cpp in Sources */,
+				DF8458271D6CBA30001A2050 /* DriverReceiving.cpp in Sources */,
 				DFC67B161C1C642800360EDE /* DVDDemuxCDDA.cpp in Sources */,
 				DFC67B171C1C642800360EDE /* DVDDemuxFFmpeg.cpp in Sources */,
 				DFC67B1A1C1C642800360EDE /* DVDDemuxUtils.cpp in Sources */,
@@ -12512,6 +12534,7 @@
 				DFC67B3A1C1C642800360EDE /* DVDMessage.cpp in Sources */,
 				DFC67B3B1C1C642800360EDE /* DVDMessageQueue.cpp in Sources */,
 				DFC67B3C1C1C642800360EDE /* DVDOverlayContainer.cpp in Sources */,
+				DF8458251D6CBA1E001A2050 /* ActiveAEFilter.cpp in Sources */,
 				DFC67B3D1C1C642800360EDE /* ApplicationMessenger.cpp in Sources */,
 				DFE4BE001C660D4B0048EB03 /* DVDDemuxClient.cpp in Sources */,
 				DFC67B3E1C1C642800360EDE /* EventLog.cpp in Sources */,
@@ -12568,6 +12591,7 @@
 				DFC67B6F1C1C642800360EDE /* GUIDialogKaiToast.cpp in Sources */,
 				DFC67B701C1C642800360EDE /* RepositoryUpdater.cpp in Sources */,
 				DFC67B711C1C642800360EDE /* GUIDialogKeyboardGeneric.cpp in Sources */,
+				DF84582F1D6CBA5F001A2050 /* PlatformDarwinTVOS.cpp in Sources */,
 				DF5DB8781C9D80A600493CD2 /* AddonCallbacksCodec.cpp in Sources */,
 				DFC67B721C1C642800360EDE /* GUIDialogMediaFilter.cpp in Sources */,
 				DF5DB85E1C9D7E6700493CD2 /* GUIControllerList.cpp in Sources */,
@@ -12672,6 +12696,7 @@
 				DFC67BD11C1C642800360EDE /* PVRDirectory.cpp in Sources */,
 				DFC67BD21C1C642800360EDE /* WsgiResponse.cpp in Sources */,
 				DFC67BD41C1C642800360EDE /* RarDirectory.cpp in Sources */,
+				DF84582B1D6CBA4E001A2050 /* PlatformDarwin.cpp in Sources */,
 				DFC67BD51C1C642800360EDE /* RarFile.cpp in Sources */,
 				DFC67BD61C1C642800360EDE /* RarManager.cpp in Sources */,
 				DFC67BD71C1C642800360EDE /* RSSDirectory.cpp in Sources */,
@@ -12997,6 +13022,7 @@
 				DFC67D131C1C642800360EDE /* PVRChannelGroupInternal.cpp in Sources */,
 				DFC67D141C1C642800360EDE /* PVRChannelGroups.cpp in Sources */,
 				DFC67D151C1C642800360EDE /* PVRChannelGroupsContainer.cpp in Sources */,
+				DF8458291D6CBA47001A2050 /* Platform.cpp in Sources */,
 				DFC67D161C1C642800360EDE /* GUIDialogPVRChannelManager.cpp in Sources */,
 				DF5DB87E1C9D80C000493CD2 /* AddonGUIWindow.cpp in Sources */,
 				DFC67D171C1C642800360EDE /* GUIDialogPVRChannelsOSD.cpp in Sources */,
@@ -13016,6 +13042,7 @@
 				DFC67D241C1C642800360EDE /* PVRRadioRDSInfoTag.cpp in Sources */,
 				DFC67D251C1C642800360EDE /* GUIWindowPVRBase.cpp in Sources */,
 				DFC67D261C1C642800360EDE /* GUIWindowPVRChannels.cpp in Sources */,
+				DF8458301D6CBBEE001A2050 /* GUIFeatureControls.cpp in Sources */,
 				DFC67D271C1C642800360EDE /* GUIWindowPVRGuide.cpp in Sources */,
 				DF5DB8791C9D80AC00493CD2 /* AddonCallbacksGUI.cpp in Sources */,
 				DFC67D281C1C642800360EDE /* GUIWindowPVRRecordings.cpp in Sources */,
@@ -13382,6 +13409,7 @@
 				DFC67E7C1C1C642800360EDE /* PltDidl.cpp in Sources */,
 				DFC67E7D1C1C642800360EDE /* PltFileMediaServer.cpp in Sources */,
 				DFD29DB51CAEEEC700B83C6D /* PVRClient.cpp in Sources */,
+				DF8458261D6CBA28001A2050 /* RumbleGenerator.cpp in Sources */,
 				DFC67E7E1C1C642800360EDE /* DataCacheCore.cpp in Sources */,
 				DFC67E7F1C1C642800360EDE /* PltMediaBrowser.cpp in Sources */,
 				DFC67E801C1C642800360EDE /* PltMediaCache.cpp in Sources */,
@@ -13494,6 +13522,7 @@
 				E4991159174E5CC300741B6D /* filcreat.cpp in Sources */,
 				E499115A174E5CC300741B6D /* file.cpp in Sources */,
 				68D9167B1DD0430E00058B06 /* GUIDialogNewJoystick.cpp in Sources */,
+				DF84582A1D6CBA4E001A2050 /* PlatformDarwin.cpp in Sources */,
 				E499115B174E5CC300741B6D /* filefn.cpp in Sources */,
 				E499115C174E5CC300741B6D /* filestr.cpp in Sources */,
 				E499115D174E5CC300741B6D /* find.cpp in Sources */,
@@ -13734,6 +13763,7 @@
 				E4991266174E5D8F00741B6D /* FileFactory.cpp in Sources */,
 				DF29BCEC1B5D911800904347 /* AddonManagementEvent.cpp in Sources */,
 				395C29EE1A98A16300EBC7AD /* HTTPPythonInvoker.cpp in Sources */,
+				DF8458281D6CBA46001A2050 /* Platform.cpp in Sources */,
 				E4991268174E5D8F00741B6D /* FTPDirectory.cpp in Sources */,
 				E4991269174E5D8F00741B6D /* FTPParse.cpp in Sources */,
 				E4991270174E5D8F00741B6D /* HTTPDirectory.cpp in Sources */,
