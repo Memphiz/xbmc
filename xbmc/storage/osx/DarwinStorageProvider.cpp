@@ -46,7 +46,11 @@ void CDarwinStorageProvider::GetLocalDrives(VECSOURCES &localDrives)
 
   // User home folder
   #ifdef TARGET_DARWIN_IOS
+    #ifdef TARGET_DARWIN_TVOS
+    share.strPath = "special://home/";
+    #else
     share.strPath = "special://envhome/";
+    #endif
   #else
     share.strPath = getenv("HOME");
   #endif
