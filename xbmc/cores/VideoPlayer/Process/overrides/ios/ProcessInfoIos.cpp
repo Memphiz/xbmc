@@ -52,8 +52,14 @@ void CProcessInfoIOS::SetSwDeinterlacingMethods()
     CSingleLock lock(m_videoCodecSection);
     methods = m_deintMethods;
   }
+
+#if defined(TARGET_DARWIN_TVOS)
+  // add bob inverteddeinterlacer for tvos
+  methods.push_back(EINTERLACEMETHOD::VS_INTERLACEMETHOD_RENDER_BOB_INVERTED);
+#else // ios
   // add bob deinterlacer for ios
   methods.push_back(EINTERLACEMETHOD::VS_INTERLACEMETHOD_RENDER_BOB);
+#endif
 
   // update with the new methods list
   UpdateDeinterlacingMethods(methods);
