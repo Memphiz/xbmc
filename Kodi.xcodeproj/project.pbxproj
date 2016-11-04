@@ -2168,6 +2168,7 @@
 		DFD29DB31CAEEE7C00B83C6D /* ServiceBroker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7CE3FB8E1C9D40EA00366A4C /* ServiceBroker.cpp */; };
 		DFD29DB41CAEEE7F00B83C6D /* ServiceManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7CE3FB8A1C9D3CCA00366A4C /* ServiceManager.cpp */; };
 		DFD29DB51CAEEEC700B83C6D /* PVRClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C1870601CA1664D00114E45 /* PVRClient.cpp */; };
+		DFD542D41DCD132D0033FC4E /* FilesystemInstaller.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF209C101DB2A0C200515D1F /* FilesystemInstaller.cpp */; };
 		DFD5812516C828500008EEA0 /* DAVCommon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFD5812116C8284F0008EEA0 /* DAVCommon.cpp */; };
 		DFD5812616C828500008EEA0 /* DAVFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFD5812316C828500008EEA0 /* DAVFile.cpp */; };
 		DFD717271C09EDCE0025D964 /* MessagePrinter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFD717241C09EDCE0025D964 /* MessagePrinter.cpp */; };
@@ -12854,6 +12855,7 @@
 				DFC67C6F1C1C642800360EDE /* XBTFReader.cpp in Sources */,
 				DFC67C701C1C642800360EDE /* GenericTouchActionHandler.cpp in Sources */,
 				DFC67C711C1C642800360EDE /* ITouchInputHandling.cpp in Sources */,
+				DFD542D41DCD132D0033FC4E /* FilesystemInstaller.cpp in Sources */,
 				DFC67C721C1C642800360EDE /* SkinVariable.cpp in Sources */,
 				DFC67C731C1C642800360EDE /* AddonsOperations.cpp in Sources */,
 				DFC67C741C1C642800360EDE /* ApplicationOperations.cpp in Sources */,
