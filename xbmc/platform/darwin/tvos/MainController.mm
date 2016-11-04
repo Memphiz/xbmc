@@ -1520,7 +1520,8 @@ int KODI_Run(bool renderGUI)
   
   try
   {
-    status = g_application.Run();
+    CFileItemList playlist;
+    status = g_application.Run(playlist);
   }
   catch(...)
   {
