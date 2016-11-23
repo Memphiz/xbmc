@@ -133,6 +133,7 @@ typedef NS_ENUM(NSUInteger, UIPanGestureRecognizerDirection)
 - (id)   initWithFrame:(CGRect)frame withScreen:(UIScreen *)screen;
 - (void) insertVideoView:(UIView*)view;
 - (void) removeVideoView:(UIView*)view;
+- (void*) getEAGLContextObj;
 @end
 
 extern MainController *g_xbmcController;

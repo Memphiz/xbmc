@@ -41,8 +41,9 @@
   UIScreen     *m_currentScreen;
   BOOL          m_framebufferResizeRequested;
 }
-@property (readonly, getter=getContext) EAGLContext *m_context;
+@property (readonly, getter=getCurrentEAGLContext) EAGLContext *m_context;
 @property (readonly, getter=getCurrentScreen) UIScreen *m_currentScreen;
+
 
 - (id)          initWithFrame:(CGRect)frame withScreen:(UIScreen *)screen;
 - (void)        setFramebuffer;

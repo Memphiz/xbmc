@@ -1448,7 +1448,7 @@ MainController *g_xbmcController;
 - (void)startAnimation
 {
   //PRINT_SIGNATURE();
-  if (m_animating == NO && [m_glView getContext])
+  if (m_animating == NO && [m_glView getCurrentEAGLContext])
   {
     // kick off an animation thread
     m_animationThreadLock = [[NSConditionLock alloc] initWithCondition: FALSE];
@@ -1462,7 +1462,7 @@ MainController *g_xbmcController;
 - (void)stopAnimation
 {
   //PRINT_SIGNATURE();
-  if (m_animating == NO && [m_glView getContext])
+  if (m_animating == NO && [m_glView getCurrentEAGLContext])
   {
     m_appAlive = FALSE;
     m_animating = FALSE;
@@ -1730,6 +1730,11 @@ int KODI_Run(bool renderGUI)
 //  LOG(@"default: %@", [notification name]);
 //  LOG(@"userInfo: %@", [notification userInfo]);
 }
+  
+  - (void*) getEAGLContextObj
+  {
+    return [m_glView getCurrentEAGLContext];
+  }
 
 @end
 #undef BOOL
