@@ -2251,6 +2251,7 @@
 		DFFA440C19104C1300C3923B /* AppIcon72x72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43E119104BFA00C3923B /* AppIcon72x72@2x.png */; };
 		DFFA440D19104C1300C3923B /* AppIcon76x76.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43E219104BFA00C3923B /* AppIcon76x76.png */; };
 		DFFA440E19104C1300C3923B /* AppIcon76x76@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43E319104BFA00C3923B /* AppIcon76x76@2x.png */; };
+		DFFAA2C21DE5FF67005E9A0F /* DVDVideoCodecVideoToolBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFFAA2BF1DE5FEDB005E9A0F /* DVDVideoCodecVideoToolBox.cpp */; };
 		DFFB395D1C5E36B6002C5879 /* InfoScanner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 228FA65C1C53F9D50023BBF0 /* InfoScanner.cpp */; };
 		E33206380D5070AA00435CE3 /* DVDDemuxVobsub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E33206370D5070AA00435CE3 /* DVDDemuxVobsub.cpp */; };
 		E33466A60D2E5103005A65EC /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E33466A50D2E5103005A65EC /* IOKit.framework */; };
@@ -5311,6 +5312,8 @@
 		DFFA43FC19104BFA00C3923B /* icon_32x32@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_32x32@2x.png"; sourceTree = "<group>"; };
 		DFFA43FD19104BFA00C3923B /* icon_512x512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_512x512.png; sourceTree = "<group>"; };
 		DFFA43FE19104BFA00C3923B /* icon_512x512@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_512x512@2x.png"; sourceTree = "<group>"; };
+		DFFAA2BF1DE5FEDB005E9A0F /* DVDVideoCodecVideoToolBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DVDVideoCodecVideoToolBox.cpp; sourceTree = "<group>"; };
+		DFFAA2C01DE5FEDB005E9A0F /* DVDVideoCodecVideoToolBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVDVideoCodecVideoToolBox.h; sourceTree = "<group>"; };
 		E33206370D5070AA00435CE3 /* DVDDemuxVobsub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DVDDemuxVobsub.cpp; sourceTree = "<group>"; };
 		E33466A50D2E5103005A65EC /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = /System/Library/Frameworks/IOKit.framework; sourceTree = "<absolute>"; };
 		E36578860D3AA7B40033CC1C /* VideoPlayerCodec.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VideoPlayerCodec.cpp; sourceTree = "<group>"; };
@@ -9451,6 +9454,8 @@
 		E38E153A0D25F9F900618676 /* Video */ = {
 			isa = PBXGroup;
 			children = (
+				DFFAA2BF1DE5FEDB005E9A0F /* DVDVideoCodecVideoToolBox.cpp */,
+				DFFAA2C01DE5FEDB005E9A0F /* DVDVideoCodecVideoToolBox.h */,
 				DFBD336A1BD531CB001A8FEE /* DllVideoToolBox.h */,
 				F597B05A18A804E0005AADAE /* DVDVideoCodec.cpp */,
 				E38E153C0D25F9F900618676 /* DVDVideoCodec.h */,
@@ -13251,6 +13256,7 @@
 				DFC67DDE1C1C642800360EDE /* SystemGlobals.cpp in Sources */,
 				DFC67DDF1C1C642800360EDE /* TextureCache.cpp in Sources */,
 				DFC67DE01C1C642800360EDE /* TextureCacheJob.cpp in Sources */,
+				DFFAA2C21DE5FF67005E9A0F /* DVDVideoCodecVideoToolBox.cpp in Sources */,
 				DFC67DE11C1C642800360EDE /* TextureDatabase.cpp in Sources */,
 				DFC67DE21C1C642800360EDE /* ThumbLoader.cpp in Sources */,
 				DFC67DE31C1C642800360EDE /* ThumbnailCache.cpp in Sources */,
