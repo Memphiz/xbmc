@@ -718,6 +718,18 @@ bool CDVDVideoCodecVideoToolBox::Open(CDVDStreamInfo &hints, CDVDCodecOptions &o
     CLog::Log(LOGDEBUG,"VideoToolBox: opened width(%d), height(%d)", hints.width, hints.height);
     m_hintsForReopen = hints;
     m_optionsForReopen = options;
+    
+    m_processInfo.SetVideoDeintMethod("none");
+    
+    std::list<EINTERLACEMETHOD> deintMethods;
+    deintMethods.push_back(EINTERLACEMETHOD::VS_INTERLACEMETHOD_NONE);
+    m_processInfo.UpdateDeinterlacingMethods(deintMethods);
+
+    m_processInfo.SetVideoDecoderName(m_pFormatName, true);
+    m_processInfo.SetVideoDimensions(hints.width, hints.height);
+    m_processInfo.SetVideoPixelFormat("420YpCbCr8BiPlanarVideoRange");
+    m_processInfo.SetVideoDeintMethod("none");
+    m_processInfo.SetVideoDAR(hints.aspect);
 
     return true;
   }
@@ -1064,8 +1076,10 @@ CDVDVideoCodecVideoToolBox::CreateVTSession(int width, int height, CMFormatDescr
   // The recommended pixel format choices are 
   //  kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange or kCVPixelFormatType_32BGRA.
   //  TODO: figure out what we need.
+//  CFDictionarySetSInt32(destinationPixelBufferAttributes,
+//    kCVPixelBufferPixelFormatTypeKey, kCVPixelFormatType_32BGRA);
   CFDictionarySetSInt32(destinationPixelBufferAttributes,
-    kCVPixelBufferPixelFormatTypeKey, kCVPixelFormatType_32BGRA);
+                        kCVPixelBufferPixelFormatTypeKey, kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange);
   CFDictionarySetSInt32(destinationPixelBufferAttributes,
     kCVPixelBufferWidthKey, width);
   CFDictionarySetSInt32(destinationPixelBufferAttributes,
@@ -1133,7 +1147,8 @@ CDVDVideoCodecVideoToolBox::VTDecoderCallback(
     return;
   }
   OSType format_type = CVPixelBufferGetPixelFormatType(imageBuffer);
-  if (format_type != kCVPixelFormatType_32BGRA)
+  //if (format_type != kCVPixelFormatType_32BGRA)
+  if (format_type != kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange)
   {
     CLog::Log(LOGERROR, "%s - imageBuffer format is not 'BGRA',is reporting 0x%x",
       "VTDecoderCallback", (int)format_type);
