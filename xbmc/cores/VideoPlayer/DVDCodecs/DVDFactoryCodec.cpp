@@ -41,6 +41,10 @@
 #include "Video/DVDVideoCodecAndroidMediaCodec.h"
 #include "platform/android/activity/AndroidFeatures.h"
 #endif
+
+#if defined(TARGET_DARWIN_TVOS)
+#include "Video/DVDVideoCodecVideoToolBox.h"
+#endif
 #include "Audio/DVDAudioCodecFFmpeg.h"
 #include "Audio/DVDAudioCodecPassthrough.h"
 #include "Overlay/DVDOverlayCodecSSA.h"
@@ -149,6 +153,8 @@ CDVDVideoCodec* CDVDFactoryCodec::CreateVideoCodec(CDVDStreamInfo &hint, CProces
     pCodec = OpenCodec(new CDVDVideoCodecOpenMax(processInfo), hint, options);
 #elif defined(HAS_MMAL)
     pCodec = OpenCodec(new CMMALVideo(processInfo), hint, options);
+#elif defined(TARGET_DARWIN_TVOS)
+    pCodec = OpenCodec(new CDVDVideoCodecVideoToolBox(processInfo), hint, options);
 #endif
     if (pCodec)
       return pCodec;
