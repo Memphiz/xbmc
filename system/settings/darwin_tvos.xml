@@ -78,10 +78,8 @@
         <setting id="videoplayer.hqscalers">
           <visible>false</visible>
         </setting>
-        <setting id="videoplayer.usevtb" type="boolean">
-          <visible>false</visible>
-        </setting>
         <setting id="videoplayer.useavf" type="boolean">
+          <visible>false</visible>
           <default>false</default>
         </setting>
       </group>
