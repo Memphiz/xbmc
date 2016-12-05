@@ -13546,6 +13546,9 @@ this.Kodi.module("HelpApp", function(HelpApp, App, Backbone, Marionette, $, _) {
         }, {
           title: t.gettext('License'),
           path: 'help/license'
+        }, {
+          title: t.gettext('Kodi Log'),
+          path: 'help/kodi-log'
         }
       ];
     }
