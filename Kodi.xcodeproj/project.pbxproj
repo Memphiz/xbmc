@@ -1057,6 +1057,8 @@
 		DF93D6B31444A8B1007C6459 /* ZipFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF93D6971444A8B0007C6459 /* ZipFile.cpp */; };
 		DF9484031D70DCB100EFCF79 /* ProcessInfoOSX.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF9483FD1D70DCB100EFCF79 /* ProcessInfoOSX.cpp */; };
 		DF9484051D70DCC300EFCF79 /* ProcessInfoIOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF9483FA1D70DCB100EFCF79 /* ProcessInfoIOS.cpp */; };
+		DF94A2551DF6199C00D0FC13 /* GUIDialogButtonCapture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 680E23B11DD3D65200D2B766 /* GUIDialogButtonCapture.cpp */; };
+		DF94A2561DF619AF00D0FC13 /* GUIDialogNewJoystick.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68D916781DD0430E00058B06 /* GUIDialogNewJoystick.cpp */; };
 		DF9557401C3490ED00E5CDB1 /* AddonSystemSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 39520F8F1C3174EE00272121 /* AddonSystemSettings.cpp */; };
 		DF98D98C1434F47D00A6EBE1 /* SkinVariable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF98D98A1434F47D00A6EBE1 /* SkinVariable.cpp */; };
 		DFA8157E16713B1200E4E597 /* WakeOnAccess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFA8157C16713B1200E4E597 /* WakeOnAccess.cpp */; };
@@ -1179,7 +1181,6 @@
 		DFC67AEA1C1C642800360EDE /* ilog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC720A8D155091BB00FFD782 /* ilog.cpp */; };
 		DFC67AEB1C1C642800360EDE /* AEEncoderFFmpeg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFB65F6A15373AE7006B8FF1 /* AEEncoderFFmpeg.cpp */; };
 		DFC67AEC1C1C642800360EDE /* AEBitstreamPacker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFB65FA315373AE7006B8FF1 /* AEBitstreamPacker.cpp */; };
-		DFC67AED1C1C642800360EDE /* AEBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFB65FA515373AE7006B8FF1 /* AEBuffer.cpp */; };
 		DFC67AEE1C1C642800360EDE /* AEChannelInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFB65FA715373AE7006B8FF1 /* AEChannelInfo.cpp */; };
 		DFC67AEF1C1C642800360EDE /* AEDeviceInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C0B98A1154B79C30065A238 /* AEDeviceInfo.cpp */; };
 		DFC67AF01C1C642800360EDE /* AELimiter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C7CEAEF165629530059C9EB /* AELimiter.cpp */; };
@@ -12459,7 +12460,6 @@
 				DFC67AEA1C1C642800360EDE /* ilog.cpp in Sources */,
 				DFC67AEB1C1C642800360EDE /* AEEncoderFFmpeg.cpp in Sources */,
 				DFC67AEC1C1C642800360EDE /* AEBitstreamPacker.cpp in Sources */,
-				DFC67AED1C1C642800360EDE /* AEBuffer.cpp in Sources */,
 				DFC67AEE1C1C642800360EDE /* AEChannelInfo.cpp in Sources */,
 				DFC67AEF1C1C642800360EDE /* AEDeviceInfo.cpp in Sources */,
 				DFC67AF01C1C642800360EDE /* AELimiter.cpp in Sources */,
@@ -13329,6 +13329,7 @@
 				DFC67E291C1C642800360EDE /* CharsetDetection.cpp in Sources */,
 				DFC67E2A1C1C642800360EDE /* OverlayRendererGUI.cpp in Sources */,
 				DF5DB8631C9D7E7C00493CD2 /* ControllerLayout.cpp in Sources */,
+				DF94A2561DF619AF00D0FC13 /* GUIDialogNewJoystick.cpp in Sources */,
 				DF80843E1C79DF0400A9C77C /* AddonBuilder.cpp in Sources */,
 				DFC67E2B1C1C642800360EDE /* SettingsOperations.cpp in Sources */,
 				DFC67E2C1C1C642800360EDE /* IListProvider.cpp in Sources */,
@@ -13423,6 +13424,7 @@
 				DFC67E7E1C1C642800360EDE /* DataCacheCore.cpp in Sources */,
 				DFC67E7F1C1C642800360EDE /* PltMediaBrowser.cpp in Sources */,
 				DFC67E801C1C642800360EDE /* PltMediaCache.cpp in Sources */,
+				DF94A2551DF6199C00D0FC13 /* GUIDialogButtonCapture.cpp in Sources */,
 				DFC67E811C1C642800360EDE /* PltMediaItem.cpp in Sources */,
 				DFC67E821C1C642800360EDE /* PltMediaServer.cpp in Sources */,
 				DFC67E831C1C642800360EDE /* PltSyncMediaBrowser.cpp in Sources */,
