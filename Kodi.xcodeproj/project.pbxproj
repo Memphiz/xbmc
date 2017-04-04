@@ -1065,6 +1065,9 @@
 		DFAB049813F8376700B70BFB /* InertialScrollingHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFAB049613F8376700B70BFB /* InertialScrollingHandler.cpp */; };
 		DFACDB891D6CAC33003BBB92 /* PlatformDarwin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF8E55951D5F1D7000FD2BA3 /* PlatformDarwin.cpp */; };
 		DFACDB8E1D6CAD06003BBB92 /* Platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF0D9F4B1D63931F006A7DBB /* Platform.cpp */; settings = {COMPILER_FLAGS = "-DPLATFORM_OVERRIDE"; }; };
+		DFAEAD601E9433C4005AA9DD /* GameServices.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682770161E4122440053946F /* GameServices.cpp */; };
+		DFAEAD611E9433D9005AA9DD /* ControllerManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682770121E4122370053946F /* ControllerManager.cpp */; };
+		DFAEAD621E9433F2005AA9DD /* KeymapActionMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 686668211E54091200B5C990 /* KeymapActionMap.cpp */; };
 		DFAF6A4F16EBAE3800D6AE12 /* RssManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFAF6A4D16EBAE3800D6AE12 /* RssManager.cpp */; };
 		DFB02DEA16629DBA00F37752 /* PyContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFB02DE816629DBA00F37752 /* PyContext.cpp */; };
 		DFB0F472161B747500D744F4 /* AddonsOperations.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFB0F470161B747500D744F4 /* AddonsOperations.cpp */; };
@@ -12581,6 +12584,7 @@
 				DFC67B5F1C1C642800360EDE /* PosixInterfaceForCLog.cpp in Sources */,
 				DFC67B601C1C642800360EDE /* EpgContainer.cpp in Sources */,
 				DFC67B611C1C642800360EDE /* EpgDatabase.cpp in Sources */,
+				DFAEAD601E9433C4005AA9DD /* GameServices.cpp in Sources */,
 				DFC67B621C1C642800360EDE /* EpgInfoTag.cpp in Sources */,
 				DFC67B631C1C642800360EDE /* EpgSearchFilter.cpp in Sources */,
 				DFC67B641C1C642800360EDE /* GUIEPGGridContainer.cpp in Sources */,
@@ -12885,6 +12889,7 @@
 				DFC67C851C1C642800360EDE /* AddonModuleXbmc.cpp in Sources */,
 				DFC67C861C1C642800360EDE /* AddonModuleXbmcaddon.cpp in Sources */,
 				DFC67C871C1C642800360EDE /* PVRSettings.cpp in Sources */,
+				DFAEAD611E9433D9005AA9DD /* ControllerManager.cpp in Sources */,
 				DFC67C881C1C642800360EDE /* AddonModuleXbmcgui.cpp in Sources */,
 				DFC67C891C1C642800360EDE /* AddonModuleXbmcplugin.cpp in Sources */,
 				DFC67C8A1C1C642800360EDE /* AddonModuleXbmcvfs.cpp in Sources */,
@@ -12909,6 +12914,7 @@
 				DFC67C9C1C1C642800360EDE /* XTimeUtils.cpp in Sources */,
 				DFC67C9D1C1C642800360EDE /* GUIDialogMusicInfo.cpp in Sources */,
 				DFC67C9E1C1C642800360EDE /* GUIDialogMusicOSD.cpp in Sources */,
+				DFAEAD621E9433F2005AA9DD /* KeymapActionMap.cpp in Sources */,
 				DFC67C9F1C1C642800360EDE /* GUIDialogSongInfo.cpp in Sources */,
 				DFC67CA01C1C642800360EDE /* GUIDialogVisualisationPresetList.cpp in Sources */,
 				DFC67CA11C1C642800360EDE /* MusicAlbumInfo.cpp in Sources */,
