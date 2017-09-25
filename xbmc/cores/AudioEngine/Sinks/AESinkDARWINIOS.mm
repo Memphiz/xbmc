@@ -19,9 +19,14 @@
  */
 
 #include <AudioToolbox/AudioToolbox.h>
+// AVMediaType conflicts with avutil.h enum AVMediaType from ffmpeg
+// dirty dirty hack ...
+#define AVMediaType AVMediaType_fooo
 #import  <AVFoundation/AVFoundation.h>
+#undef AVMediaType
 
 #define BOOL XBMC_BOOL
+
 #include "cores/AudioEngine/Sinks/AESinkDARWINIOS.h"
 #include "cores/AudioEngine/Utils/AEUtil.h"
 #include "cores/AudioEngine/Utils/AERingBuffer.h"
@@ -31,9 +36,6 @@
 #include "threads/Condition.h"
 #include "windowing/WindowingFactory.h"
 #undef BOOL
-
-#include <AudioToolbox/AudioToolbox.h>
-#import  <AVFoundation/AVFoundation.h>
 
 enum CAChannelIndex {
   CAChannel_PCM_6CHAN = 0,
