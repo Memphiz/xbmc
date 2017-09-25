@@ -51,31 +51,31 @@ typedef struct {
 //  * License as published by the Free Software Foundation; either
 //  * version 2.1 of the License, or (at your option) any later version.
 #define BS_RB16(x)                          \
-  ((((const uint8_t*)(x))[0] <<  8) |        \
-   ((const uint8_t*)(x)) [1])
+((((const uint8_t*)(x))[0] <<  8) |        \
+((const uint8_t*)(x)) [1])
 
 #define BS_RB24(x)                          \
-  ((((const uint8_t*)(x))[0] << 16) |        \
-   (((const uint8_t*)(x))[1] <<  8) |        \
-   ((const uint8_t*)(x))[2])
+((((const uint8_t*)(x))[0] << 16) |        \
+(((const uint8_t*)(x))[1] <<  8) |        \
+((const uint8_t*)(x))[2])
 
 #define BS_RB32(x)                          \
-  ((((const uint8_t*)(x))[0] << 24) |        \
-   (((const uint8_t*)(x))[1] << 16) |        \
-   (((const uint8_t*)(x))[2] <<  8) |        \
-   ((const uint8_t*)(x))[3])
+((((const uint8_t*)(x))[0] << 24) |        \
+(((const uint8_t*)(x))[1] << 16) |        \
+(((const uint8_t*)(x))[2] <<  8) |        \
+((const uint8_t*)(x))[3])
 
 #define BS_WB32(p, d) { \
-  ((uint8_t*)(p))[3] = (d); \
-  ((uint8_t*)(p))[2] = (d) >> 8; \
-  ((uint8_t*)(p))[1] = (d) >> 16; \
-  ((uint8_t*)(p))[0] = (d) >> 24; }
+((uint8_t*)(p))[3] = (d); \
+((uint8_t*)(p))[2] = (d) >> 8; \
+((uint8_t*)(p))[1] = (d) >> 16; \
+((uint8_t*)(p))[0] = (d) >> 24; }
 
 #define BS_WL32(p, d) { \
-  ((uint8_t*)(p))[0] = (d); \
-  ((uint8_t*)(p))[1] = (d) >> 8; \
-  ((uint8_t*)(p))[2] = (d) >> 16; \
-  ((uint8_t*)(p))[3] = (d) >> 24; }
+((uint8_t*)(p))[0] = (d); \
+((uint8_t*)(p))[1] = (d) >> 8; \
+((uint8_t*)(p))[2] = (d) >> 16; \
+((uint8_t*)(p))[3] = (d) >> 24; }
 
 typedef struct
 {
@@ -100,28 +100,28 @@ typedef struct
   int profile_idc;
   int level_idc;
   int sps_id;
-
+  
   int chroma_format_idc;
   int separate_colour_plane_flag;
   int bit_depth_luma_minus8;
   int bit_depth_chroma_minus8;
   int qpprime_y_zero_transform_bypass_flag;
   int seq_scaling_matrix_present_flag;
-
+  
   int log2_max_frame_num_minus4;
   int pic_order_cnt_type;
   int log2_max_pic_order_cnt_lsb_minus4;
-
+  
   int max_num_ref_frames;
   int gaps_in_frame_num_value_allowed_flag;
   int pic_width_in_mbs_minus1;
   int pic_height_in_map_units_minus1;
-
+  
   int frame_mbs_only_flag;
   int mb_adaptive_frame_field_flag;
-
+  
   int direct_8x8_inference_flag;
-
+  
   int frame_cropping_flag;
   int frame_crop_left_offset;
   int frame_crop_right_offset;
@@ -134,11 +134,11 @@ class CBitstreamParser
 public:
   CBitstreamParser();
   ~CBitstreamParser();
-
+  
   static bool Open();
   static void Close();
-  static bool FindIdrSlice(const uint8_t *buf, int buf_size, bool annexb = true);
-
+  static bool HasKeyframe(const uint8_t *buf, int buf_size, bool annexb = true);
+  
 protected:
   static const uint8_t* find_start_code(const uint8_t *p, const uint8_t *end, uint32_t *state);
 };
@@ -148,7 +148,7 @@ class CBitstreamConverter
 public:
   CBitstreamConverter();
   ~CBitstreamConverter();
-
+  
   bool              Open(enum AVCodecID codec, uint8_t *in_extradata, int in_extrasize, bool to_annexb);
   void              Close(void);
   bool              NeedConvert(void) const { return m_convert_bitstream; };
@@ -157,20 +157,25 @@ public:
   int               GetConvertSize() const;
   uint8_t*          GetExtraData(void) const;
   int               GetExtraSize() const;
-
+  void              ResetKeyframe(void);
+  bool              HasKeyframe() const;
+  
+  static bool       ExtractH264_SPS_PPS(const uint8_t *data, int len,
+                                        uint8_t **sps, int *spssize, uint8_t **pps, int *ppssize);
+  
   static void       bits_reader_set( bits_reader_t *br, uint8_t *buf, int len );
   static uint32_t   read_bits( bits_reader_t *br, int nbits );
   static void       skip_bits( bits_reader_t *br, int nbits );
   static uint32_t   get_bits( bits_reader_t *br, int nbits );
-
+  
   static void       init_bits_writer(bits_writer_t *s, uint8_t *buffer, int buffer_size, int writer_le);
   static void       write_bits(bits_writer_t *s, int n, unsigned int value);
   static void       skip_bits( bits_writer_t *s, int n);
   static void       flush_bits(bits_writer_t *s);
-
+  
   static void       parseh264_sps(const uint8_t *sps, const uint32_t sps_size, bool *interlaced, int32_t *max_ref_frames);
   static bool       mpeg2_sequence_header(const uint8_t *data, const uint32_t size, mpeg2_sequence *sequence);
-
+  
 protected:
   static const int  avc_parse_nal_units(AVIOContext *pb, const uint8_t *buf_in, int size);
   static const int  avc_parse_nal_units_buf(const uint8_t *buf_in, uint8_t **buf, int *size);
@@ -182,30 +187,30 @@ protected:
   bool              BitstreamConvertInitHEVC(void *in_extradata, int in_extrasize);
   bool              BitstreamConvert(uint8_t* pData, int iSize, uint8_t **poutbuf, int *poutbuf_size);
   static void       BitstreamAllocAndCopy(uint8_t **poutbuf, int *poutbuf_size,
-                      const uint8_t *sps_pps, uint32_t sps_pps_size, const uint8_t *in, uint32_t in_size);
-
+                                          const uint8_t *sps_pps, uint32_t sps_pps_size, const uint8_t *in, uint32_t in_size);
+  
   typedef struct omx_bitstream_ctx {
-      uint8_t  length_size;
-      uint8_t  first_idr;
-      uint8_t  idr_sps_pps_seen;
-      uint8_t *sps_pps_data;
-      uint32_t size;
+    uint8_t  length_size;
+    uint8_t  first_idr;
+    uint8_t  idr_sps_pps_seen;
+    uint8_t *sps_pps_data;
+    uint32_t size;
   } omx_bitstream_ctx;
-
+  
   uint8_t          *m_convertBuffer;
   int               m_convertSize;
   uint8_t          *m_inputBuffer;
   int               m_inputSize;
-
+  
   uint32_t          m_sps_pps_size;
   omx_bitstream_ctx m_sps_pps_context;
   bool              m_convert_bitstream;
   bool              m_to_annexb;
-
+  
   uint8_t          *m_extradata;
   int               m_extrasize;
   bool              m_convert_3byteTo4byteNALSize;
   bool              m_convert_bytestream;
   AVCodecID         m_codec;
+  bool              m_has_keyframe;
 };
-
