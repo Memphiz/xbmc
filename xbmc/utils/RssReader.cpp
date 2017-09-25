@@ -269,11 +269,11 @@ void CRssReader::GetNewsItems(TiXmlElement* channelXmlNode, int iFeed)
   if (m_tagSet.empty())
     AddTag("title");
 
-  while (itemNode > 0)
+  while (itemNode > (void *)0)
   {
     TiXmlNode* childNode = itemNode->FirstChild();
     mTagElements.clear();
-    while (childNode > 0)
+    while (childNode > (void *)0)
     {
       std::string strName = childNode->ValueStr();
 
