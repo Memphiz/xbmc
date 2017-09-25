@@ -1,5 +1,5 @@
 include ../../Makefile.include
-DEPS= ../../Makefile.include Makefile samba_android.patch no_fork_and_exec.patch
+DEPS= ../../Makefile.include Makefile samba_android.patch no_fork_and_exec.patch crt_extensions.patch
 
 # lib name, version
 LIBNAME=samba
@@ -54,6 +54,7 @@ ifeq ($(OS),android)
 endif
 ifeq ($(TARGET_PLATFORM),appletvos)
 	cd $(PLATFORM); patch -p0 < ../no_fork_and_exec.patch
+	cd $(PLATFORM); patch -p0 < ../crt_extensions.patch
 endif
 ifeq ($(OS),osx)
 	sed -ie "s|ifndef HAVE_CLOCK_GETTIME|if !defined(HAVE_CLOCK_GETTIME) \&\& !defined(CLOCK_REALTIME)|" "$(PLATFORM)/lib/replace/system/time.h"
