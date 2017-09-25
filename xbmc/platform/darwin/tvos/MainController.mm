@@ -1241,8 +1241,10 @@ MainController *g_xbmcController;
 //--------------------------------------------------------------
 - (CGSize)getScreenSize
 {
-  m_screensize.width  = m_glView.bounds.size.width  * m_screenScale;
-  m_screensize.height = m_glView.bounds.size.height * m_screenScale;
+  dispatch_sync(dispatch_get_main_queue(), ^{
+    m_screensize.width  = m_glView.bounds.size.width  * m_screenScale;
+    m_screensize.height = m_glView.bounds.size.height * m_screenScale;
+  });
   return m_screensize;
 }
 
@@ -1288,13 +1290,17 @@ MainController *g_xbmcController;
 - (void)disableScreenSaver
 {
   m_disableIdleTimer = YES;
-  [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+  });
 }
 //--------------------------------------------------------------
 - (void)enableScreenSaver
 {
   m_disableIdleTimer = NO;
-  [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+  });
 }
 
 //--------------------------------------------------------------
@@ -1305,13 +1311,15 @@ MainController *g_xbmcController;
   // to get out of the screensaver is to call ourself to open an custom URL that is registered
   // in our Info.plist. The openURL method of UIApplication must be supported but we can just
   // reply NO and we get restored to UIApplicationStateActive.
-  bool inActive = [UIApplication sharedApplication].applicationState == UIApplicationStateInactive;
-  if (inActive)
-  {
-    NSURL *url = [NSURL URLWithString:@"kodi://wakeup"];
-    [[UIApplication sharedApplication] openURL:url];
-  }
-
+  __block  bool inActive = false;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    inActive = [UIApplication sharedApplication].applicationState == UIApplicationStateInactive;
+    if (inActive)
+    {
+      NSURL *url = [NSURL URLWithString:@"kodi://wakeup"];
+      [[UIApplication sharedApplication] openURL:url];
+    }
+  });
   return inActive;
 }
 
