@@ -512,6 +512,24 @@ void CVideoPlayerVideo::Process()
 
 bool CVideoPlayerVideo::ProcessDecoderOutput(int &decoderState, double &frametime, double &pts)
 {
+  if (decoderState & VC_SWFALLBACK)
+  {
+    CLog::Log(LOGDEBUG, "CDVDPlayerVideo - video decoder failed, fallback to software decode");
+    m_hints.software = true;
+    CDVDVideoCodec* codec = CDVDFactoryCodec::CreateVideoCodec(m_hints, m_processInfo, m_renderManager.GetRenderInfo());
+    m_messageQueue.Put(new CDVDMsgVideoCodecChange(m_hints, codec), 20);
+    
+    while (!m_packets.empty())
+    {
+      CDVDMsgDemuxerPacket* msg = (CDVDMsgDemuxerPacket*)m_packets.front().message->Acquire();
+      m_packets.pop_front();
+      m_messageQueue.Put(msg, 10);
+    }
+    m_packets.clear();
+    
+    return false;
+  }
+  
   // if decoder was flushed, we need to seek back again to resume rendering
   if (decoderState & VC_FLUSHED)
   {
