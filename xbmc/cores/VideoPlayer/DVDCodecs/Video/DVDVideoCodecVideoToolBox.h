@@ -20,7 +20,6 @@
  */
 #define HAVE_VIDEOTOOLBOXDECODER
 #if defined(HAVE_VIDEOTOOLBOXDECODER)
-
 #include <atomic>
 #include <queue>
 
@@ -29,6 +28,7 @@
 #include "DVDCodecs/DVDCodecs.h"
 #include <CoreVideo/CoreVideo.h>
 #include <CoreMedia/CoreMedia.h>
+#include <VideoToolBox/VideoToolBox.h>
 
 class DllVideoToolBox;
 class CBitstreamParser;
@@ -52,7 +52,7 @@ class CDVDVideoCodecVideoToolBox : public CDVDVideoCodec
 public:
   CDVDVideoCodecVideoToolBox(CProcessInfo &processInfo);
   virtual ~CDVDVideoCodecVideoToolBox();
-
+  
   // Required overrides
   virtual bool Open(CDVDStreamInfo &hints, CDVDCodecOptions &options);
   virtual void Dispose(void);
@@ -66,42 +66,36 @@ public:
   virtual unsigned GetAllowedReferences();
   virtual void SetCodecControl(int flags);
   virtual void Reopen();
-
+  
 protected:
   void DisplayQueuePop(void);
   void CreateVTSession(int width, int height, CMFormatDescriptionRef fmt_desc);
   void DestroyVTSession(void);
   static void VTDecoderCallback(
-    void *refcon, CFDictionaryRef frameInfo,
-    OSStatus status, UInt32 infoFlags, CVBufferRef imageBuffer, CMTime pts, CMTime duration);
-
-  static void vtdec_session_dump_property(
-    CFStringRef prop_name, CFDictionaryRef prop_attrs, CDVDVideoCodecVideoToolBox *ctx);
-  void vtdec_session_dump_properties();
-
-  DllVideoToolBox   *m_dll;
+                                void *refcon, void *frameInfo,
+                                OSStatus status, UInt32 infoFlags, CVBufferRef imageBuffer, CMTime pts, CMTime duration);
+  
   CDVDStreamInfo     m_hintsForReopen;
   CDVDCodecOptions   m_optionsForReopen;
   void              *m_vt_session;    // opaque videotoolbox session
   CBitstreamConverter    *m_bitstream;
   CMFormatDescriptionRef  m_fmt_desc;
-
+  
   const char        *m_pFormatName;
   bool              m_DropPictures;
   int               m_codecControlFlags;
   DVDVideoPicture   m_videobuffer;
-
+  
   double            m_sort_time;
   pthread_mutex_t   m_queue_mutex;    // mutex protecting queue manipulation
   frame_queue       *m_display_queue; // display-order queue - next display frame is always at the queue head
   std::atomic<int>  m_queue_depth;    // we will try to keep the queue depth at m_max_ref_frames
   int32_t           m_max_ref_frames;
   bool              m_started;
-  int               m_lastIDRframe;
+  int               m_lastKeyframe;
   bool              m_sessionRestart;
   double            m_sessionRestartDTS;
   double            m_sessionRestartPTS;
   bool              m_enable_temporal_processing;
 };
-
 #endif
