@@ -26,9 +26,10 @@ case $XBMC_PLATFORM_DIR in
     ;;
 
   tvos)
-    DEFAULT_SDK_VERSION=9.1
+    DEFAULT_SDK_VERSION=11.0
     DEFAULT_XBMC_DEPENDS_ROOT=$WORKSPACE/tools/depends/xbmc-depends
     DEFAULT_CONFIGURATION="Debug"
+    DEFAULT_XCODE_APP="Xcode9.0.app"
     ;;
 
   osx64)
