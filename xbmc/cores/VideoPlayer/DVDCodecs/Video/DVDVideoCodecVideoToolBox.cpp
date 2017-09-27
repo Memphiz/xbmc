@@ -897,24 +897,28 @@ CDVDVideoCodecVideoToolBox::CreateVTSession(int width, int height, CMFormatDescr
   // decoding, scaling and rendering 4k h264 runs into
   // some bandwidth limit. detect and scale down to reduce
   // the bandwidth requirements.
-  int width_clamp = 1920;
-  int new_width = CheckNP2(width);
-  if (width != new_width)
+  
+  if (!CDarwinUtils::IsAppleTV4_4K())
   {
-    // force picture width to power of two and scale up height
-    // we do this because no GL_UNPACK_ROW_LENGTH in OpenGLES
-    // and the CVPixelBufferPixel gets created using some
-    // strange alignment when width is non-standard.
-    double w_scaler = (double)new_width / width;
-    width = new_width;
-    height = height * w_scaler;
-  }
-  // scale output pictures down to 1080p size for display
-  if (width > width_clamp)
-  {
-    double w_scaler = (float)width_clamp / width;
-    width = width_clamp;
-    height = height * w_scaler;
+    int width_clamp = 1920;
+    int new_width = CheckNP2(width);
+    if (width != new_width)
+    {
+      // force picture width to power of two and scale up height
+      // we do this because no GL_UNPACK_ROW_LENGTH in OpenGLES
+      // and the CVPixelBufferPixel gets created using some
+      // strange alignment when width is non-standard.
+      double w_scaler = (double)new_width / width;
+      width = new_width;
+      height = height * w_scaler;
+    }
+    // scale output pictures down to 1080p size for display
+    if (width > width_clamp)
+    {
+      double w_scaler = (float)width_clamp / width;
+      width = width_clamp;
+      height = height * w_scaler;
+    }
   }
   
 #elif defined(TARGET_DARWIN_IOS)
