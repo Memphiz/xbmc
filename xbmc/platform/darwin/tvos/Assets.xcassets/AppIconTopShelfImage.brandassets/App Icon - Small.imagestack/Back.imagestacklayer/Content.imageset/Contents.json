@@ -4,6 +4,11 @@
       "idiom" : "tv",
       "filename" : "Kodi_AppIcon_400x240_back_noTransparency.png",
       "scale" : "1x"
+    },
+    {
+      "idiom" : "tv",
+      "filename" : "Kodi_AppIcon_400x240_back_noTransparency@2x.png",
+      "scale" : "2x"
     }
   ],
   "info" : {
