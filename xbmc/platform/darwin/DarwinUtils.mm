@@ -76,6 +76,8 @@ enum iosPlatform
   iPadMiniGSMCDMA,
   iPadMiniWIFI,
   AppleTV2,
+  AppleTV4,
+  AppleTV4K,
   iPhone4,            //from here on list devices with retina support (e.x. mainscreen scale == 2.0)
   iPhone4CDMA,
   iPhone4S,
@@ -116,7 +118,6 @@ enum iosPlatform
   iPhone6Plus,        //from here on list devices with retina support which have scale == 3.0
   iPhone6sPlus,
   iPhone7Plus,
-  AppleTV4,
 };
 
 // platform strings are based on http://theiphonewiki.com/wiki/Models
@@ -214,6 +215,7 @@ enum iosPlatform getIosPlatform()
     else if (devStr == "iPad6,8") eDev = iPadPro12_9InchCellular;
     else if (devStr == "AppleTV2,1") eDev = AppleTV2;
     else if (devStr == "AppleTV5,3") eDev = AppleTV4;
+    else if (devStr == "AppleTV6,2") eDev = AppleTV4K;
   }
 #endif
   return eDev;
@@ -601,6 +603,12 @@ void CDarwinUtils::EnableOSScreenSaver(bool enable)
   else
     [g_xbmcController disableScreenSaver];
 #endif
+}
+
+bool CDarwinUtils::IsAppleTV4_4K()
+{
+  bool isATV4k = getIosPlatform() == AppleTV4K;
+  return isATV4k;
 }
 
 bool CDarwinUtils::ResetSystemIdleTimer()
