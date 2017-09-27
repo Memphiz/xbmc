@@ -1169,8 +1169,7 @@ MainController *g_xbmcController;
   m_glView = [[MainEAGLView alloc] initWithFrame:self.view.bounds withScreen:[UIScreen mainScreen]];
 
   // Check if screen is Retina
-  // m_screenScale = [[UIScreen mainScreen] nativeScale];
-  m_screenScale = 1.0;
+  m_screenScale = [m_glView getScreenScale:[UIScreen mainScreen]];
   [self.view addSubview: m_glView];
 }
 //--------------------------------------------------------------
