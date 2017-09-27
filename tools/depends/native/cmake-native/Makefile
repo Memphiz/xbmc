@@ -9,8 +9,8 @@ ARCHIVE=$(SOURCE).tar.gz
 
 # configuration settings
 
-SETENV=CC=$(CC_FOR_BUILD) CXX=$(CXX_FOR_BUILD) LD=$(LD_FOR_BUILD) CFLAGS=$(NATIVE_CFLAGS) \
-	CXXFLAGS=$(NATIVE_CXXFLAGS) LDFLAGS=$(NATIVE_LDFLAGS)
+SETENV=CC=$(CC_FOR_BUILD) CXX=$(CXX_FOR_BUILD) LD=$(LD_FOR_BUILD) CFLAGS="$(NATIVE_CFLAGS) -Werror=unguarded-availability-new" \
+	CXXFLAGS="$(NATIVE_CXXFLAGS) -Werror=unguarded-availability-new" LDFLAGS="$(NATIVE_LDFLAGS) -Wl,-no_weak_imports"
 
 ifeq ($(NATIVE_OS), osx)
   SETENV+=SDKROOT=$(shell xcrun --show-sdk-path)
@@ -31,6 +31,7 @@ $(PLATFORM): $(TARBALLS_LOCATION)/$(ARCHIVE) $(DEPS)
 	-rm -rf $(PLATFORM)/*; mkdir -p $(PLATFORM)
 	cd $(PLATFORM); $(ARCHIVE_TOOL) $(ARCHIVE_TOOL_FLAGS) $(TARBALLS_LOCATION)/$(ARCHIVE)
 	cd $(PLATFORM); sed -ie "s/CMAKE_OSX_DEPLOYMENT_TARGET/CMAKE_OSX_DEPLOYMENT_TARGET_FOOO/" Modules/Platform/Darwin-Initialize.cmake
+	cd $(PLATFORM); patch -p0 < ../futimens.patch
 	cd $(PLATFORM); $(SETENV) $(CONFIGURE)
 
 $(APP): $(PLATFORM)
