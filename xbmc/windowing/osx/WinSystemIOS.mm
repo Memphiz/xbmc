@@ -301,7 +301,14 @@ void CWinSystemIOS::FillInVideoModes()
       w = mode.size.width;
       h = mode.size.height;
       UpdateDesktopResolution(res, disp, w, h, refreshrate);
-      CLog::Log(LOGNOTICE, "Found possible resolution for display %d with %d x %d\n", disp, w, h);      
+      CLog::Log(LOGNOTICE, "Found possible resolution for display %d with %d x %d\n", disp, w, h);
+      dispatch_sync(dispatch_get_main_queue(), ^{
+        CGFloat scale = 0.0;
+        CGFloat nativeScale = 0.0;
+        scale = [[UIScreen mainScreen] scale];
+        nativeScale = [[UIScreen mainScreen] nativeScale];
+        CLog::Log(LOGNOTICE, "Found possible resolution for display %d with %d x %d scale: %f nativeScale: %f\n", disp, w, h, scale, nativeScale);
+      });
 
       //overwrite the mode str because  UpdateDesktopResolution adds a
       //"Full Screen". Since the current resolution is there twice
