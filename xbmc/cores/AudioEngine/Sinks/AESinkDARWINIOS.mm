@@ -19,11 +19,7 @@
  */
 
 #include <AudioToolbox/AudioToolbox.h>
-// AVMediaType conflicts with avutil.h enum AVMediaType from ffmpeg
-// dirty dirty hack ...
-#define AVMediaType AVMediaType_fooo
-#import  <AVFoundation/AVFoundation.h>
-#undef AVMediaType
+#import <AVFoundation/AVAudioSession.h>
 
 #define BOOL XBMC_BOOL
 
