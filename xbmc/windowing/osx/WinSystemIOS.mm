@@ -301,7 +301,6 @@ void CWinSystemIOS::FillInVideoModes()
       w = mode.size.width;
       h = mode.size.height;
       UpdateDesktopResolution(res, disp, w, h, refreshrate);
-      CLog::Log(LOGNOTICE, "Found possible resolution for display %d with %d x %d\n", disp, w, h);
       dispatch_sync(dispatch_get_main_queue(), ^{
         CGFloat scale = 0.0;
         CGFloat nativeScale = 0.0;
