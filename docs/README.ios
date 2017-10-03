@@ -58,8 +58,10 @@ Install latest Xcode (6.1.0 as of the writing). You can download it from
 Xcode 6.1.0 only runs on 10.9.5 and later (at least Mavericks).
 Xcode 6.4.0 only runs on 10.10 and later (at least Yosemite).
 Xcode 7.x only runs on 10.10 and later (at least Yosemite).
+Xcode 9.0 only runs on 10.12 and later (at least Sierra).
 
 The preferred iOS SDK Version is 8.1.
+The preferred TVOS SDK Version is 11.0
 
 -----------------------------------------------------------------------------
 3.1.1 Supported Xcode and OSX constellations
@@ -72,6 +74,7 @@ constellations of Xcode and OSX versions (to be updated once we know more):
 3. Xcode 6.3.0 against iOS SDK 8.3 on 10.10.x (Yosemite)
 4. Xcode 6.4.0 against iOS SDK 8.4 on 10.10.x (Yosemite)
 5. Xcode 7.x against iOS SDK 9.x on 10.10.x (Yosemite)
+6. Xcode 9.0 against TVOS SDK 11.0 on 10.12.x (Sierra)
 
 -----------------------------------------------------------------------------
 3.2 Install Cross libs and runtime environment
