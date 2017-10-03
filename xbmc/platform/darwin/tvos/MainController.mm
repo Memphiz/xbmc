@@ -1311,7 +1311,7 @@ MainController *g_xbmcController;
   // in our Info.plist. The openURL method of UIApplication must be supported but we can just
   // reply NO and we get restored to UIApplicationStateActive.
   __block  bool inActive = false;
-  dispatch_async(dispatch_get_main_queue(), ^{
+  dispatch_sync(dispatch_get_main_queue(), ^{
     inActive = [UIApplication sharedApplication].applicationState == UIApplicationStateInactive;
     if (inActive)
     {
