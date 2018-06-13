@@ -1093,6 +1093,13 @@ bool CGUIMediaWindow::OnClick(int iItem, const std::string &player)
       m_history.AddPath(strCurrentDirectory, m_strFilterPath);
     }
 
+    if (m_vecItemsUpdating)
+    {
+      CLog::Log(LOGWARNING, "CGUIMediaWindow::OnClick - updating in progress");
+      return true;
+    }
+    CUpdateGuard ug(m_vecItemsUpdating);
+
     CFileItem directory(*pItem);
     if (!Update(directory.GetPath()))
       ShowShareErrorMessage(&directory);
