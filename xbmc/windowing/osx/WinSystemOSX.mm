@@ -194,7 +194,14 @@ CGDirectDisplayID GetDisplayID(int screen_index)
 
   // Get the list of displays.
   CGGetActiveDisplayList(MAX_DISPLAYS, displayArray, &numDisplays);
-  return(displayArray[screen_index]);
+  if (numDisplays > screen_index)
+  {
+    return(displayArray[screen_index]);
+  }
+  else
+  {
+    return kCGNullDirectDisplay;
+  }
 }
 
 size_t DisplayBitsPerPixelForMode(CGDisplayModeRef mode)
@@ -393,7 +400,7 @@ NSString* screenNameForDisplay(CGDirectDisplayID displayID)
 
 int GetDisplayIndex(std::string dispName)
 {
-  int ret = 0;
+  int ret = -1;
 
   // Add full screen settings for additional monitors
   int numDisplays = [[NSScreen screens] count];
@@ -480,7 +487,7 @@ void fadeOutDisplay(NSScreen *theScreen, double fadeTime)
 // non interlaced, nonstretched, safe for hardware
 CGDisplayModeRef GetMode(int width, int height, double refreshrate, int screenIdx)
 {
-  if ( screenIdx >= (signed)[[NSScreen screens] count])
+  if ( screenIdx == -1 || screenIdx >= (signed)[[NSScreen screens] count])
     return NULL;
 
   Boolean stretched;
@@ -1125,18 +1132,22 @@ void CWinSystemOSX::UpdateResolutions()
   double fps;
 
   int dispIdx = GetDisplayIndex(CServiceBroker::GetSettings().GetString(CSettings::SETTING_VIDEOSCREEN_MONITOR));
-  GetScreenResolution(&w, &h, &fps, dispIdx);
-  UpdateDesktopResolution(CDisplaySettings::GetInstance().GetResolutionInfo(RES_DESKTOP), w, h, fps, 0);
-  NSString *dispName = screenNameForDisplay(GetDisplayID(dispIdx));
+  
+  if (dispIdx >= 0)
+  {
+    GetScreenResolution(&w, &h, &fps, dispIdx);
+    UpdateDesktopResolution(CDisplaySettings::GetInstance().GetResolutionInfo(RES_DESKTOP), w, h, fps, 0);
+    NSString *dispName = screenNameForDisplay(GetDisplayID(dispIdx));
 
-  CDisplaySettings::GetInstance().GetResolutionInfo(RES_DESKTOP).strOutput = [dispName UTF8String];
+    CDisplaySettings::GetInstance().GetResolutionInfo(RES_DESKTOP).strOutput = [dispName UTF8String];
 
-  CDisplaySettings::GetInstance().ClearCustomResolutions();
+    CDisplaySettings::GetInstance().ClearCustomResolutions();
 
-  // now just fill in the possible resolutions for the attached screens
-  // and push to the resolution info vector
-  FillInVideoModes();
-  CDisplaySettings::GetInstance().ApplyCalibrations();
+    // now just fill in the possible resolutions for the attached screens
+    // and push to the resolution info vector
+    FillInVideoModes();
+    CDisplaySettings::GetInstance().ApplyCalibrations();
+  }
 }
 
 /*
