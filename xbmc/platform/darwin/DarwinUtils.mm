@@ -19,10 +19,15 @@
   #import <UIKit/UIKit.h>
   #import <mach/mach_host.h>
   #import <sys/sysctl.h>
-  #include <arpa/inet.h>
-  #include <ifaddrs.h>
-  #include <resolv.h>
-  #include <dns.h>
+  #import "platform/darwin/ios/route.h"
+  #import <sys/socket.h>
+  #import <netinet/in.h>
+  #import <net/if_dl.h>
+  #import <net/if.h>
+  #import <arpa/inet.h>
+  #import <ifaddrs.h>
+  #import <resolv.h>
+  #import <dns.h>
 #else
   #import <Cocoa/Cocoa.h>
   #import <CoreFoundation/CoreFoundation.h>
@@ -626,6 +631,121 @@ const std::vector<std::string>& CDarwinUtils::GetNameServers(void)
   }
 #endif
   return nameServers;
+}
+
+#if defined(TARGET_DARWIN_IOS)
+struct sockaddr *GetSockAddr(struct rt_msghdr2 *rtm)
+{
+  //sockaddrs are after the message header
+  struct sockaddr* dst_sa = (struct sockaddr *)(rtm + 1);
+  
+  if(rtm->rtm_addrs & RTA_DST)
+  {
+    if(dst_sa->sa_family == AF_INET &&
+       !((rtm->rtm_flags & RTF_WASCLONED) &&
+         (rtm->rtm_parentflags & RTF_PRCLONING)))
+    {
+      struct sockaddr* sa = (struct sockaddr*)(rtm + 1);
+      
+      if (sa[RTAX_GATEWAY].sa_family == AF_INET)
+      {
+        return &sa[RTAX_GATEWAY];
+      }
+    }
+  }
+  return nullptr;
+}
+
+bool GetGatewayForIfName(std::string ifName, struct sockaddr **foundSockAddr)
+{
+  bool result = false;
+  size_t needed = 0;
+  int mib[6];
+  char *buf = nullptr;
+  char *next = nullptr;
+  char *lim = nullptr;;
+  struct rt_msghdr2 *rtm = nullptr;
+  
+  mib[0] = CTL_NET;
+  mib[1] = PF_ROUTE;
+  mib[2] = 0;
+  mib[3] = 0;
+  mib[4] = NET_RT_DUMP2;
+  mib[5] = 0;
+  
+  if (sysctl(mib, 6, NULL, &needed, NULL, 0) < 0)
+  {
+    CLog::Log(LOGERROR, "sysctl: net.route.0.0.dump estimate");
+    return result;
+  }
+  
+  if ((buf = new char[needed]) == 0)
+  {
+    CLog::Log(LOGERROR, "malloc(%lu)", (unsigned long)needed);
+    return result;
+  }
+  if (sysctl(mib, 6, buf, &needed, NULL, 0) < 0)
+  {
+    CLog::Log(LOGERROR, "sysctl: net.route.0.0.dump");
+    delete [] buf;
+    return result;
+  }
+  
+  lim  = buf + needed;
+  
+  for (next = buf; next < lim; next += rtm->rtm_msglen)
+  {
+    rtm = (struct rt_msghdr2 *)next;
+    char nameBuff[IF_NAMESIZE];
+    std::string name = if_indextoname(rtm->rtm_index, nameBuff);
+    int flagVal = 1 << RTAX_GATEWAY;
+    
+    if (name == ifName && rtm->rtm_addrs & flagVal)
+    {
+      struct sockaddr *addr = GetSockAddr(rtm);
+      if (addr != nullptr)
+      {
+        *foundSockAddr = addr;
+        result = true;
+        break;
+      }
+    }
+  }
+  delete [] buf;
+  
+  return result;
+}
+#endif
+
+const std::string& CDarwinUtils::GetDefaultGateway(std::string ifName)
+{
+  static std::string gateway;
+#if defined(TARGET_DARWIN_IOS)
+  if (gateway.empty())
+  {
+    struct sockaddr *gatewayAdr;
+    bool result = GetGatewayForIfName(ifName, &gatewayAdr);
+    
+    if(!result)
+    {
+      gateway = "none";
+    }
+    else
+    {
+      struct sockaddr_in* si = (struct sockaddr_in *)gatewayAdr;
+      if(si->sin_addr.s_addr == INADDR_ANY)
+      {
+        gateway = "default";
+      }
+      else
+      {
+        gateway = inet_ntoa(si->sin_addr);
+      }
+    }
+  }
+#endif
+  
+  return gateway;
 }
 
 bool CDarwinUtils::IsAliasShortcut(const std::string& path, bool isdirectory)

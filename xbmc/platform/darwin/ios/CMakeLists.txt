@@ -10,6 +10,7 @@ set(HEADERS IOSEAGLView.h
             IOSKeyboard.h
             IOSKeyboardView.h
             IOSScreenManager.h
+            route.h
             XBMCApplication.h
             XBMCController.h
             XBMCDebugHelpers.h)

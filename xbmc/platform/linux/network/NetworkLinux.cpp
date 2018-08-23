@@ -186,6 +186,9 @@ std::string CNetworkInterfaceLinux::GetCurrentDefaultGateway(void)
    std::string result;
 
 #if defined(TARGET_DARWIN)
+#if defined(TARGET_DARWIN_IOS)
+  result = CDarwinUtils::GetDefaultGateway(GetName());
+#else
   FILE* pipe = popen("echo \"show State:/Network/Global/IPv4\" | scutil | grep Router", "r");
   usleep(100000);
   if (pipe)
@@ -200,6 +203,7 @@ std::string CNetworkInterfaceLinux::GetCurrentDefaultGateway(void)
     }
     pclose(pipe);
   }
+#endif//TARGET_DARWIN
   if (result.empty())
     CLog::Log(LOGWARNING, "Unable to determine gateway");
 #elif defined(TARGET_FREEBSD)
