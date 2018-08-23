@@ -34,6 +34,7 @@
   #include <netinet/if_ether.h>
 #else //IOS
   #include "platform/darwin/osx/network/ioshacks.h"
+  #include "platform/darwin/DarwinUtils.h"
 #endif
   #include <ifaddrs.h>
 #elif defined(TARGET_FREEBSD)
@@ -465,6 +466,9 @@ std::vector<std::string> CNetworkLinux::GetNameServers(void)
    std::vector<std::string> result;
 
 #if defined(TARGET_DARWIN)
+#if defined(TARGET_DARWIN_IOS)
+  return CDarwinUtils::GetNameServers();
+#else
   FILE* pipe = popen("scutil --dns | grep \"nameserver\" | tail -n2", "r");
   usleep(100000);
   if (pipe)
@@ -486,6 +490,7 @@ std::vector<std::string> CNetworkLinux::GetNameServers(void)
   }
   if (result.empty())
     CLog::Log(LOGWARNING, "Unable to determine nameserver");
+#endif//TARGET_DARWIN
 #elif defined(TARGET_ANDROID)
   char nameserver[PROP_VALUE_MAX];
 

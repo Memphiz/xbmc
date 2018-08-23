@@ -19,6 +19,10 @@
   #import <UIKit/UIKit.h>
   #import <mach/mach_host.h>
   #import <sys/sysctl.h>
+  #include <arpa/inet.h>
+  #include <ifaddrs.h>
+  #include <resolv.h>
+  #include <dns.h>
 #else
   #import <Cocoa/Cocoa.h>
   #import <CoreFoundation/CoreFoundation.h>
@@ -593,6 +597,35 @@ const std::string& CDarwinUtils::GetManufacturer(void)
 #endif // TARGET_DARWIN_OSX
   }
   return manufName;
+}
+
+const std::vector<std::string>& CDarwinUtils::GetNameServers(void)
+{
+  static std::vector<std::string> nameServers;
+#if defined(TARGET_DARWIN_IOS)
+  if (nameServers.empty())
+  {
+    res_state res = (res_state)malloc(sizeof(struct __res_state));
+    
+    int result = res_ninit(res);
+    
+    if ( result == 0 )
+    {
+      for ( int i = 0; i < res->nscount; i++ )
+      {
+        std::string s = inet_ntoa(res->nsaddr_list[i].sin_addr);
+        nameServers.push_back(s);
+      }
+    }
+    else
+    {
+      CLog::Log(LOGERROR, "CDarwinUtils::GetNameServers - no nameservers could be fetched (error %d)", result);
+    }
+    
+    free(res);
+  }
+#endif
+  return nameServers;
 }
 
 bool CDarwinUtils::IsAliasShortcut(const std::string& path, bool isdirectory)
