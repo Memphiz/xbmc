@@ -236,7 +236,7 @@ CNetworkInterface* CNetworkBase::GetFirstConnectedInterface()
         if (StringUtils::StartsWith(iface->GetName(), "en0") && !hasVPN)
          return iface;
         
-        if (StringUtils::StartsWith(iface->GetName(), "pdp_ip") && !hasVPN)
+        if (StringUtils::StartsWith(iface->GetName(), "pdp_ip") && !hasVPN && !hasWifi)
           return iface;
         
         if (StringUtils::StartsWith(iface->GetName(), "utun") && hasVPN)
