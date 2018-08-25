@@ -141,6 +141,18 @@ std::string CNetworkInterfaceLinux::GetCurrentIPAddress(void)
       result = inet_ntoa((*((struct sockaddr_in *)&ifr.ifr_addr)).sin_addr);
    }
 
+  if (StringUtils::StartsWith(m_interfaceName, "pdp_ip"))
+  {
+    result += " (cellular)";
+  }
+  else if (StringUtils::StartsWith(m_interfaceName, "utun"))
+  {
+    result += " (vpn)";
+  }
+  else if (StringUtils::StartsWith(m_interfaceName, "en"))
+  {
+    result += " (wifi)";
+  }
    return result;
 }
 
@@ -417,7 +429,7 @@ void CNetworkLinux::queryInterfaceList()
      GetMacAddress(cur->ifa_name, macAddrRaw);
 
       // only add interfaces with non-zero mac addresses
-      if (macAddrRaw[0] || macAddrRaw[1] || macAddrRaw[2] || macAddrRaw[3] || macAddrRaw[4] || macAddrRaw[5])
+      //if (macAddrRaw[0] || macAddrRaw[1] || macAddrRaw[2] || macAddrRaw[3] || macAddrRaw[4] || macAddrRaw[5])
          // Add the interface.
          m_interfaces.push_back(new CNetworkInterfaceLinux(this, cur->ifa_name, macAddrRaw));
    }
@@ -457,7 +469,7 @@ void CNetworkLinux::queryInterfaceList()
       GetMacAddress(interfaceName, macAddrRaw);
 
       // only add interfaces with non-zero mac addresses
-      if (macAddrRaw[0] || macAddrRaw[1] || macAddrRaw[2] || macAddrRaw[3] || macAddrRaw[4] || macAddrRaw[5])
+      //if (macAddrRaw[0] || macAddrRaw[1] || macAddrRaw[2] || macAddrRaw[3] || macAddrRaw[4] || macAddrRaw[5])
           m_interfaces.push_back(new CNetworkInterfaceLinux(this, interfaceName, macAddrRaw));
    }
    free(line);

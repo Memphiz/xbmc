@@ -204,11 +204,44 @@ CNetworkInterface* CNetworkBase::GetFirstConnectedInterface()
 {
    std::vector<CNetworkInterface*>& ifaces = GetInterfaceList();
    std::vector<CNetworkInterface*>::const_iterator iter = ifaces.begin();
+   bool hasVPN = false;
+   bool hasCellular = false;
+   bool hasWifi = false;
+  
+   while (iter != ifaces.end())
+   {
+     CNetworkInterface* iface = *iter;
+     if (iface && StringUtils::StartsWith(iface->GetName(), "utun"))
+     {
+       hasVPN = true;
+     }
+     if (iface && StringUtils::StartsWith(iface->GetName(), "en0"))
+     {
+       hasWifi = true;
+     }
+     if (iface && StringUtils::StartsWith(iface->GetName(), "pdp_ip"))
+     {
+       hasCellular = true;
+     }
+     ++iter;
+   }
+  
+  iter = ifaces.begin();
+  
    while (iter != ifaces.end())
    {
       CNetworkInterface* iface = *iter;
       if (iface && iface->IsConnected())
+      {
+        if (StringUtils::StartsWith(iface->GetName(), "en0") && !hasVPN)
          return iface;
+        
+        if (StringUtils::StartsWith(iface->GetName(), "pdp_ip") && !hasVPN)
+          return iface;
+        
+        if (StringUtils::StartsWith(iface->GetName(), "utun") && hasVPN)
+          return iface;
+      }
       ++iter;
    }
 

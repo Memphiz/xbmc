@@ -604,9 +604,78 @@ const std::string& CDarwinUtils::GetManufacturer(void)
   return manufName;
 }
 
+#include <ifaddrs.h>
+#include <arpa/inet.h>
+#include <net/if.h>
+
+#define IOS_CELLULAR    @"pdp_ip0"
+#define IOS_WIFI        @"en0"
+//#define IOS_VPN       @"utun0"
+#define IP_ADDR_IPv4    @"ipv4"
+#define IP_ADDR_IPv6    @"ipv6"
+
+NSDictionary *getIPAddresses()
+{
+  NSMutableDictionary *addresses = [NSMutableDictionary dictionaryWithCapacity:8];
+  
+  // retrieve the current interfaces - returns 0 on success
+  struct ifaddrs *interfaces;
+  if(!getifaddrs(&interfaces)) {
+    // Loop through linked list of interfaces
+    struct ifaddrs *interface;
+    for(interface=interfaces; interface; interface=interface->ifa_next) {
+      if(!(interface->ifa_flags & IFF_UP) /* || (interface->ifa_flags & IFF_LOOPBACK) */ ) {
+        continue; // deeply nested code harder to read
+      }
+      const struct sockaddr_in *addr = (const struct sockaddr_in*)interface->ifa_addr;
+      char addrBuf[ MAX(INET_ADDRSTRLEN, INET6_ADDRSTRLEN) ];
+      if(addr && (addr->sin_family==AF_INET || addr->sin_family==AF_INET6)) {
+        NSString *name = [NSString stringWithUTF8String:interface->ifa_name];
+        NSString *type;
+        if(addr->sin_family == AF_INET) {
+          if(inet_ntop(AF_INET, &addr->sin_addr, addrBuf, INET_ADDRSTRLEN)) {
+            type = IP_ADDR_IPv4;
+          }
+        } else {
+          const struct sockaddr_in6 *addr6 = (const struct sockaddr_in6*)interface->ifa_addr;
+          if(inet_ntop(AF_INET6, &addr6->sin6_addr, addrBuf, INET6_ADDRSTRLEN)) {
+            type = IP_ADDR_IPv6;
+          }
+        }
+        if(type) {
+          NSString *key = [NSString stringWithFormat:@"%@/%@", name, type];
+          addresses[key] = [NSString stringWithUTF8String:addrBuf];
+        }
+      }
+    }
+    // Free memory
+    freeifaddrs(interfaces);
+  }
+  return [addresses count] ? addresses : nil;
+}
+
+NSString *getIPAddress(BOOL preferIPv4)
+{
+  NSArray *searchArray = preferIPv4 ?
+  @[ /*IOS_VPN @"/" IP_ADDR_IPv4, IOS_VPN @"/" IP_ADDR_IPv6,*/ IOS_WIFI @"/" IP_ADDR_IPv4, IOS_WIFI @"/" IP_ADDR_IPv6, IOS_CELLULAR @"/" IP_ADDR_IPv4, IOS_CELLULAR @"/" IP_ADDR_IPv6 ] :
+  @[ /*IOS_VPN @"/" IP_ADDR_IPv6, IOS_VPN @"/" IP_ADDR_IPv4,*/ IOS_WIFI @"/" IP_ADDR_IPv6, IOS_WIFI @"/" IP_ADDR_IPv4, IOS_CELLULAR @"/" IP_ADDR_IPv6, IOS_CELLULAR @"/" IP_ADDR_IPv4 ] ;
+  
+  NSDictionary *addresses = getIPAddresses();
+  NSLog(@"addresses: %@", addresses);
+  
+  __block NSString *address;
+  [searchArray enumerateObjectsUsingBlock:^(NSString *key, NSUInteger idx, BOOL *stop)
+   {
+     address = addresses[key];
+     if(address) *stop = YES;
+   } ];
+  return address ? address : @"0.0.0.0";
+}
+
 const std::vector<std::string>& CDarwinUtils::GetNameServers(void)
 {
   static std::vector<std::string> nameServers;
+  NSString * adr = getIPAddress(TRUE);
 #if defined(TARGET_DARWIN_IOS)
   if (nameServers.empty())
   {
@@ -639,9 +708,9 @@ const struct sockaddr *GetSockAddr(const struct rt_msghdr2 *rtm)
   //sockaddrs are after the message header
   const struct sockaddr* dst_sa = reinterpret_cast<const struct sockaddr *>(rtm + 1);
   
-  if(rtm->rtm_addrs & RTA_DST)
+  if((rtm->rtm_addrs & (RTA_DST | RTA_GATEWAY)) == (RTA_DST | RTA_GATEWAY))
   {
-    if(dst_sa->sa_family == AF_INET &&
+    if(dst_sa[RTAX_DST].sa_family == AF_INET &&
        !((rtm->rtm_flags & RTF_WASCLONED) &&
          (rtm->rtm_parentflags & RTF_PRCLONING)))
     {
@@ -663,13 +732,13 @@ bool GetGatewayForIfName(std::string ifName, struct sockaddr **foundSockAddr)
   char *next = nullptr;
   char *lim = nullptr;;
   struct rt_msghdr2 *rtm = nullptr;
-  
+
   mib[0] = CTL_NET;
   mib[1] = PF_ROUTE;
   mib[2] = 0;
-  mib[3] = 0;
-  mib[4] = NET_RT_DUMP2;
-  mib[5] = 0;
+  mib[3] = AF_INET;
+  mib[4] = NET_RT_FLAGS;
+  mib[5] = RTF_GATEWAY;
   
   if (sysctl(mib, 6, NULL, &needed, NULL, 0) < 0)
   {
