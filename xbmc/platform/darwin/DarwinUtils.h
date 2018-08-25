@@ -39,7 +39,7 @@ public:
   static bool        CFStringRefToUTF8String(CFStringRef source, std::string& destination);
   static const std::string&  GetManufacturer(void);
   static const std::vector<std::string>& GetNameServers(void);
-  static const std::string& GetDefaultGateway(std::string ifName);
+  static const std::string& GetDefaultGateway(const std::string& ifName);
   static bool        IsAliasShortcut(const std::string& path, bool isdirectory);
   static void        TranslateAliasShortcut(std::string& path);
   static bool        CreateAliasShortcut(const std::string& fromPath, const std::string& toPath);

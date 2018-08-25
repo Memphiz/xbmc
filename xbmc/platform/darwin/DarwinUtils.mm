@@ -610,7 +610,7 @@ const std::vector<std::string>& CDarwinUtils::GetNameServers(void)
 #if defined(TARGET_DARWIN_IOS)
   if (nameServers.empty())
   {
-    res_state res = (res_state)malloc(sizeof(struct __res_state));
+    res_state res = static_cast<res_state>(malloc(sizeof(struct __res_state)));
     
     int result = res_ninit(res);
     
@@ -634,10 +634,10 @@ const std::vector<std::string>& CDarwinUtils::GetNameServers(void)
 }
 
 #if defined(TARGET_DARWIN_IOS)
-struct sockaddr *GetSockAddr(struct rt_msghdr2 *rtm)
+const struct sockaddr *GetSockAddr(const struct rt_msghdr2 *rtm)
 {
   //sockaddrs are after the message header
-  struct sockaddr* dst_sa = (struct sockaddr *)(rtm + 1);
+  const struct sockaddr* dst_sa = reinterpret_cast<const struct sockaddr *>(rtm + 1);
   
   if(rtm->rtm_addrs & RTA_DST)
   {
@@ -645,11 +645,9 @@ struct sockaddr *GetSockAddr(struct rt_msghdr2 *rtm)
        !((rtm->rtm_flags & RTF_WASCLONED) &&
          (rtm->rtm_parentflags & RTF_PRCLONING)))
     {
-      struct sockaddr* sa = (struct sockaddr*)(rtm + 1);
-      
-      if (sa[RTAX_GATEWAY].sa_family == AF_INET)
+      if (dst_sa[RTAX_GATEWAY].sa_family == AF_INET)
       {
-        return &sa[RTAX_GATEWAY];
+        return &dst_sa[RTAX_GATEWAY];
       }
     }
   }
@@ -702,10 +700,10 @@ bool GetGatewayForIfName(std::string ifName, struct sockaddr **foundSockAddr)
     
     if (name == ifName && rtm->rtm_addrs & flagVal)
     {
-      struct sockaddr *addr = GetSockAddr(rtm);
+      const struct sockaddr *addr = GetSockAddr(rtm);
       if (addr != nullptr)
       {
-        *foundSockAddr = addr;
+        *foundSockAddr = const_cast<struct sockaddr *>(addr);
         result = true;
         break;
       }
@@ -717,12 +715,14 @@ bool GetGatewayForIfName(std::string ifName, struct sockaddr **foundSockAddr)
 }
 #endif
 
-const std::string& CDarwinUtils::GetDefaultGateway(std::string ifName)
+const std::string& CDarwinUtils::GetDefaultGateway(const std::string& ifName)
 {
   static std::string gateway;
+  static std::string oldIfName = ifName;
 #if defined(TARGET_DARWIN_IOS)
-  if (gateway.empty())
+  if (gateway.empty() || oldIfName != ifName)
   {
+    oldIfName = ifName;
     struct sockaddr *gatewayAdr;
     bool result = GetGatewayForIfName(ifName, &gatewayAdr);
     
@@ -732,7 +732,7 @@ const std::string& CDarwinUtils::GetDefaultGateway(std::string ifName)
     }
     else
     {
-      struct sockaddr_in* si = (struct sockaddr_in *)gatewayAdr;
+      struct sockaddr_in* si = reinterpret_cast<struct sockaddr_in *>(gatewayAdr);
       if(si->sin_addr.s_addr == INADDR_ANY)
       {
         gateway = "default";
