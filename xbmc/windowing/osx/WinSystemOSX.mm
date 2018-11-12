@@ -1163,7 +1163,8 @@ void* CWinSystemOSX::CreateWindowedContext(void* shareCtx)
 
   NSOpenGLPixelFormatAttribute wattrs_gl3[] =
   {
-    NSOpenGLPFADoubleBuffer,
+    //NSOpenGLPFADoubleBuffer,
+    NSOpenGLPFATripleBuffer,
     NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core,
     NSOpenGLPFANoRecovery,
     NSOpenGLPFAAccelerated,
@@ -1173,7 +1174,8 @@ void* CWinSystemOSX::CreateWindowedContext(void* shareCtx)
 
   NSOpenGLPixelFormatAttribute wattrs[] =
   {
-    NSOpenGLPFADoubleBuffer,
+    //NSOpenGLPFADoubleBuffer,
+    NSOpenGLPFATripleBuffer,
     NSOpenGLPFANoRecovery,
     NSOpenGLPFAAccelerated,
     NSOpenGLPFADepthSize, (NSOpenGLPixelFormatAttribute)8,
@@ -1220,7 +1222,8 @@ void* CWinSystemOSX::CreateFullScreenContext(int screen_index, void* shareCtx)
 
   NSOpenGLPixelFormatAttribute fsattrs_gl3[] =
   {
-    NSOpenGLPFADoubleBuffer,
+    //NSOpenGLPFADoubleBuffer,
+    NSOpenGLPFATripleBuffer,
     NSOpenGLPFANoRecovery,
     NSOpenGLPFAAccelerated,
     NSOpenGLPFADepthSize,  (NSOpenGLPixelFormatAttribute)24,
@@ -1231,7 +1234,8 @@ void* CWinSystemOSX::CreateFullScreenContext(int screen_index, void* shareCtx)
 
   NSOpenGLPixelFormatAttribute fsattrs[] =
   {
-    NSOpenGLPFADoubleBuffer,
+    //NSOpenGLPFADoubleBuffer,
+    NSOpenGLPFATripleBuffer,
     NSOpenGLPFANoRecovery,
     NSOpenGLPFAAccelerated,
     NSOpenGLPFADepthSize,  (NSOpenGLPixelFormatAttribute)8,
