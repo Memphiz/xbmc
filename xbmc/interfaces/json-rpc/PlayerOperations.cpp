@@ -33,6 +33,7 @@
 #include "SeekHandler.h"
 #include "utils/Variant.h"
 #include "Util.h"
+#include "settings/DisplaySettings.h"
 
 using namespace JSONRPC;
 using namespace PLAYLIST;
@@ -487,6 +488,153 @@ JSONRPC_STATUS CPlayerOperations::Zoom(const std::string &method, ITransportLaye
     default:
       return FailedToExecute;
   }
+}
+
+JSONRPC_STATUS CPlayerOperations::SetViewMode(const std::string &method, ITransportLayer *transport, IClient *client, const CVariant &parameterObject, CVariant &result)
+{
+  ViewMode mode;
+  // init with current values from settings
+  CVideoSettings vs = g_application.GetAppPlayer().GetVideoSettings();
+
+  CVariant viewMode = parameterObject["viewmode"];
+  if (viewMode.isString())
+  {
+    std::string modestr = viewMode.asString();
+    if (modestr == "normal")
+      mode = ViewModeNormal;
+    else if (modestr == "zoom")
+      mode = ViewModeZoom;
+    else if (modestr == "stretch4x3")
+      mode = ViewModeStretch4x3;
+    else if (modestr == "widezoom")
+      mode = ViewModeWideZoom;
+    else if (modestr == "stretch16x9")
+      mode = ViewModeStretch16x9;
+    else if (modestr == "original")
+      mode = ViewModeOriginal;
+    else if (modestr == "stretch16x9nonlin")
+      mode = ViewModeStretch16x9Nonlin;
+    else if (modestr == "zoom120width")
+      mode = ViewModeZoom120Width;
+    else if (modestr == "zoom110width")
+      mode = ViewModeZoom110Width;
+    else
+      return InvalidParams;
+  }
+  else if (viewMode.isObject())
+  {
+    mode = ViewModeCustom;
+    CVariant zoom = viewMode["zoom"];
+    CVariant pixelRatio = viewMode["pixelratio"];
+    CVariant verticalShift = viewMode["verticalshift"];
+    CVariant stretch = viewMode["nonlinearstretch"];
+    if (zoom.isNull() && pixelRatio.isNull() && verticalShift.isNull() && stretch.isNull())
+      return InvalidParams;
+
+    if (zoom.isDouble())
+      vs.m_CustomZoomAmount = zoom.asDouble();
+    else if (zoom.isString())
+    {
+      std::string strZoom = zoom.asString();
+      if (strZoom == "increase")
+      {
+        vs.m_CustomZoomAmount += 0.01f;
+        if (vs.m_CustomZoomAmount > 2.f)
+          vs.m_CustomZoomAmount = 2.f;
+      }
+      else if (strZoom == "decrease")
+      {
+        vs.m_CustomZoomAmount -= 0.01f;
+        if (vs.m_CustomZoomAmount < 0.5f)
+          vs.m_CustomZoomAmount = 0.5f;
+      }
+      else
+        return InvalidParams;
+    }
+
+    if (pixelRatio.isDouble())
+      vs.m_CustomPixelRatio = pixelRatio.asDouble();
+    else if (pixelRatio.isString())
+    {
+      std::string strPixelRatio = pixelRatio.asString();
+      if (strPixelRatio == "increase")
+      {
+        vs.m_CustomPixelRatio += 0.01f;
+        if (vs.m_CustomPixelRatio > 2.f)
+          vs.m_CustomPixelRatio = 2.f;
+      }
+      else if (strPixelRatio == "decrease")
+      {
+        vs.m_CustomPixelRatio -= 0.01f;
+        if (vs.m_CustomPixelRatio < 0.5f)
+          vs.m_CustomPixelRatio = 0.5f;
+      }
+      else
+        return InvalidParams;
+    }
+
+    if (verticalShift.isDouble())
+      vs.m_CustomVerticalShift = verticalShift.asDouble();
+    else if (verticalShift.isString())
+    {
+      std::string strVerticalShift = verticalShift.asString();
+      if (strVerticalShift == "increase")
+      {
+        vs.m_CustomVerticalShift -= 0.01f;
+        if (vs.m_CustomVerticalShift < -2.0f)
+          vs.m_CustomVerticalShift = -2.0f;
+      }
+      else if (strVerticalShift == "decrease")
+      {
+        vs.m_CustomVerticalShift += 0.01f;
+        if (vs.m_CustomVerticalShift > 2.0f)
+          vs.m_CustomVerticalShift = 2.0f;
+      }
+      else
+        return InvalidParams;
+    }
+
+    if (stretch.isBoolean())
+      vs.m_CustomNonLinStretch = stretch.asBoolean();
+  }
+  else
+    return InvalidParams;
+
+  g_application.GetAppPlayer().SetRenderViewMode(static_cast<int>(mode), 
+    vs.m_CustomZoomAmount, vs.m_CustomPixelRatio, vs.m_CustomVerticalShift,
+    vs.m_CustomNonLinStretch);
+
+  return ACK;
+}
+
+JSONRPC_STATUS CPlayerOperations::GetViewMode(const std::string &method, ITransportLayer *transport, IClient *client, const CVariant &parameterObject, CVariant &result)
+{
+  int mode = g_application.GetAppPlayer().GetVideoSettings().m_ViewMode;
+  if (mode == ViewModeNormal)
+    result["viewmode"] = "normal";
+  else if (mode == ViewModeZoom)
+    result["viewmode"] = "zoom";
+  else if (mode == ViewModeStretch4x3)
+    result["viewmode"] = "stretch4x3";
+  else if (mode == ViewModeWideZoom)
+    result["viewmode"] = "widezoom";
+  else if (mode == ViewModeStretch16x9)
+    result["viewmode"] = "stretch16x9";
+  else if (mode == ViewModeOriginal)
+    result["viewmode"] = "original";
+  else if (mode == ViewModeStretch16x9Nonlin)
+    result["viewmode"] = "stretch16x9nonlin";
+  else if (mode == ViewModeZoom120Width)
+    result["viewmode"] = "zoom120width";
+  else if (mode == ViewModeZoom110Width)
+    result["viewmode"] = "zoom110width";
+  else
+    result["viewmode"] = "custom";
+  result["zoom"] = CDisplaySettings::GetInstance().GetZoomAmount();
+  result["pixelratio"] = CDisplaySettings::GetInstance().GetPixelRatio();
+  result["verticalshift"] = CDisplaySettings::GetInstance().GetVerticalShift();
+  result["nonlinearstretch"] = CDisplaySettings::GetInstance().IsNonLinearStretched();
+  return OK;
 }
 
 JSONRPC_STATUS CPlayerOperations::Rotate(const std::string &method, ITransportLayer *transport, IClient *client, const CVariant &parameterObject, CVariant &result)
