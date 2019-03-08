@@ -142,6 +142,7 @@ public:
   bool Initialize() override;
   void FrameMove(bool processEvents, bool processGUI = true) override;
   void Render() override;
+  bool IsRenderGuiEnabled() override { return m_renderGUI; }
   virtual void Preflight();
   bool Create(const CAppParamParser &params);
   bool Cleanup() override;
