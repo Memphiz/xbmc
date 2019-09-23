@@ -9,6 +9,8 @@
 // needed for CNetworkInterfaceLinux::GetHostMacAddress and taken from osx sdk
 // net/if_types.h net/route.h netinet/if_ether.h
 
+#include <netinet/in.h>
+
 /*
  * These numbers are used by reliable protocols for determining
  * retransmission behavior and are included in the routing structure.
