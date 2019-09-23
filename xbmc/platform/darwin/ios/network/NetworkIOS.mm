@@ -18,6 +18,7 @@
 #include <errno.h>
 
 #include <arpa/inet.h>
+#include <dns.h>
 #include <ifaddrs.h>
 #include <net/if.h>
 #include <net/if_dl.h>
@@ -254,30 +255,27 @@ void CNetworkIOS::queryInterfaceList()
 
 std::vector<std::string> CNetworkIOS::GetNameServers(void)
 {
-  std::vector<std::string> result;
+  std::vector<std::string> nameServers;
 
-  FILE* pipe = popen("scutil --dns | grep \"nameserver\" | tail -n2", "r");
-  usleep(100000);
-  if (pipe)
+  res_state res = static_cast<res_state>(malloc(sizeof(struct __res_state)));
+
+  int result = res_ninit(res);
+
+  if (result == 0)
   {
-    char buffer[256] = {'\0'};
-    if (fread(buffer, sizeof(char), sizeof(buffer), pipe) > 0 && !ferror(pipe))
+    for (int i = 0; i < res->nscount; i++)
     {
-      std::vector<std::string> tmpStr = StringUtils::Split(buffer, "\n");
-      for (unsigned int i = 0; i < tmpStr.size(); i++)
-      {
-        // result looks like this - > '  nameserver[0] : 192.168.1.1'
-        // 2 blank spaces + 13 in 'nameserver[0]' + blank + ':' + blank == 18 :)
-        if (tmpStr[i].length() >= 18)
-          result.push_back(tmpStr[i].substr(18));
-      }
+      std::string s = inet_ntoa(res->nsaddr_list[i].sin_addr);
+      nameServers.push_back(s);
     }
-    pclose(pipe);
   }
-  if (result.empty())
-    CLog::Log(LOGWARNING, "Unable to determine nameserver");
+  else
+  {
+    CLog::Log(LOGERROR, "CNetworkIOS::GetNameServers - no nameservers could be fetched (error %d)", result);
+  }
 
-  return result;
+  free(res);
+  return nameServers;
 }
 
 bool CNetworkIOS::PingHost(unsigned long remote_ip, unsigned int timeout_ms)
