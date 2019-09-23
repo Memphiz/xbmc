@@ -13,6 +13,7 @@
 #include "utils/log.h"
 
 #include "platform/darwin/ios/network/ioshacks.h"
+#include "platform/darwin/ios/network/route.h"
 
 #include <cstdlib>
 #include <errno.h>
@@ -121,27 +122,107 @@ std::string CNetworkInterfaceIOS::GetCurrentNetmask(void) const
   return result;
 }
 
-std::string CNetworkInterfaceIOS::GetCurrentDefaultGateway(void) const
+const struct sockaddr* GetSockAddr(const struct rt_msghdr2* rtm)
 {
-  std::string result;
+  //sockaddrs are after the message header
+  const struct sockaddr* dst_sa = reinterpret_cast<const struct sockaddr*>(rtm + 1);
 
-  FILE* pipe = popen("echo \"show State:/Network/Global/IPv4\" | scutil | grep Router", "r");
-  usleep(100000);
-  if (pipe)
+  if ((rtm->rtm_addrs & (RTA_DST | RTA_GATEWAY)) == (RTA_DST | RTA_GATEWAY))
   {
-    char buffer[256] = {'\0'};
-    if (fread(buffer, sizeof(char), sizeof(buffer), pipe) > 0 && !ferror(pipe))
+    if (dst_sa[RTAX_DST].sa_family == AF_INET && !((rtm->rtm_flags & RTF_WASCLONED) && (rtm->rtm_parentflags & RTF_PRCLONING)))
     {
-      std::string tmpStr = buffer;
-      if (tmpStr.length() >= 11)
-        result = tmpStr.substr(11);
+
+      if (dst_sa[RTAX_GATEWAY].sa_family == AF_INET)
+      {
+        return &dst_sa[RTAX_GATEWAY];
+      }
     }
-    pclose(pipe);
   }
-  if (result.empty())
-    CLog::Log(LOGWARNING, "Unable to determine gateway");
+  return nullptr;
+}
+
+bool GetGatewayForIfName(std::string ifName, struct sockaddr** foundSockAddr)
+{
+  bool result = false;
+  size_t needed = 0;
+  int mib[6];
+  char* buf = nullptr;
+
+  mib[0] = CTL_NET;
+  mib[1] = PF_ROUTE;
+  mib[2] = 0;
+  mib[3] = AF_INET;
+  mib[4] = NET_RT_FLAGS;
+  mib[5] = RTF_GATEWAY;
+
+  if (sysctl(mib, 6, NULL, &needed, NULL, 0) < 0)
+  {
+    CLog::Log(LOGERROR, "sysctl: net.route.0.0.dump estimate");
+    return result;
+  }
+
+  if ((buf = new char[needed]) == 0)
+  {
+    CLog::Log(LOGERROR, "malloc(%lu)", (unsigned long)needed);
+    return result;
+  }
+  if (sysctl(mib, 6, buf, &needed, NULL, 0) < 0)
+  {
+    CLog::Log(LOGERROR, "sysctl: net.route.0.0.dump");
+    delete[] buf;
+    return result;
+  }
+
+  char* lim = buf + needed;
+
+  struct rt_msghdr2* rtm = nullptr;
+  for (char* next = buf; next < lim; next += rtm->rtm_msglen)
+  {
+    rtm = reinterpret_cast<struct rt_msghdr2*>(next);
+    char nameBuff[IF_NAMESIZE];
+    std::string name = if_indextoname(rtm->rtm_index, nameBuff);
+    int flagVal = 1 << RTAX_GATEWAY;
+
+    if (name == ifName && rtm->rtm_addrs & flagVal)
+    {
+      const struct sockaddr* addr = GetSockAddr(rtm);
+      if (addr != nullptr)
+      {
+        *foundSockAddr = const_cast<struct sockaddr*>(addr);
+        result = true;
+        break;
+      }
+    }
+  }
+  delete[] buf;
 
   return result;
+}
+
+std::string CNetworkInterfaceIOS::GetCurrentDefaultGateway(void) const
+{
+  std::string gateway;
+  struct sockaddr* gatewayAdr;
+  bool result = GetGatewayForIfName(GetName(), &gatewayAdr);
+
+  if (!result)
+  {
+    gateway = "none";
+  }
+  else
+  {
+    struct sockaddr_in* si = reinterpret_cast<struct sockaddr_in*>(gatewayAdr);
+    if (si->sin_addr.s_addr == INADDR_ANY)
+    {
+      gateway = "default";
+    }
+    else
+    {
+      gateway = inet_ntoa(si->sin_addr);
+    }
+  }
+
+  return gateway;
 }
 
 CNetworkIOS::CNetworkIOS()
