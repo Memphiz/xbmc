@@ -104,6 +104,19 @@ std::string CNetworkInterfaceIOS::GetCurrentIPAddress(void) const
     result = inet_ntoa((*(reinterpret_cast<struct sockaddr_in*>(&ifr.ifr_addr))).sin_addr);
   }
 
+  if (StringUtils::StartsWith(m_interfaceName, "pdp_ip"))
+  {
+    result += " (cellular)";
+  }
+  else if (StringUtils::StartsWith(m_interfaceName, "utun"))
+  {
+    result += " (vpn)";
+  }
+  else if (StringUtils::StartsWith(m_interfaceName, "en"))
+  {
+    result += " (wifi)";
+  }
+
   return result;
 }
 
@@ -251,25 +264,52 @@ std::vector<CNetworkInterface*>& CNetworkIOS::GetInterfaceList(void)
   return m_interfaces;
 }
 
-//! @bug
-//! Overwrite the GetFirstConnectedInterface and requery
-//! the interface list if no connected device is found
-//! this fixes a bug when no network is available after first start of xbmc
-//! and the interface comes up during runtime
 CNetworkInterface* CNetworkIOS::GetFirstConnectedInterface(void)
 {
-  CNetworkInterface* pNetIf = CNetworkBase::GetFirstConnectedInterface();
+  std::vector<CNetworkInterface*>& ifaces = GetInterfaceList();
+  std::vector<CNetworkInterface*>::const_iterator iter = ifaces.begin();
+  bool hasVPN = false;
+  bool hasCellular = false;
+  bool hasWifi = false;
 
-  // no connected Interfaces found? - requeryInterfaceList
-  if (!pNetIf)
+  while (iter != ifaces.end())
   {
-    CLog::Log(LOGDEBUG, "%s no connected interface found - requery list", __FUNCTION__);
-    queryInterfaceList();
-    //retry finding a connected if
-    pNetIf = CNetworkBase::GetFirstConnectedInterface();
+    CNetworkInterface* iface = *iter;
+    if (iface && StringUtils::StartsWith(iface->GetName(), "utun"))
+    {
+      hasVPN = true;
+    }
+    if (iface && StringUtils::StartsWith(iface->GetName(), "en0"))
+    {
+      hasWifi = true;
+    }
+    if (iface && StringUtils::StartsWith(iface->GetName(), "pdp_ip"))
+    {
+      hasCellular = true;
+    }
+    ++iter;
   }
 
-  return pNetIf;
+  iter = ifaces.begin();
+
+  while (iter != ifaces.end())
+  {
+    CNetworkInterface* iface = *iter;
+    if (iface && iface->IsConnected())
+    {
+      if (StringUtils::StartsWith(iface->GetName(), "en0") && !hasVPN)
+        return iface;
+
+      if (StringUtils::StartsWith(iface->GetName(), "pdp_ip") && !hasVPN && !hasWifi)
+        return iface;
+
+      if (StringUtils::StartsWith(iface->GetName(), "utun") && hasVPN)
+        return iface;
+    }
+    ++iter;
+  }
+
+  return nullptr;
 }
 
 void CNetworkIOS::GetMacAddress(const std::string& interfaceName, char rawMac[6])
@@ -325,10 +365,8 @@ void CNetworkIOS::queryInterfaceList()
     char macAddrRaw[6];
     GetMacAddress(cur->ifa_name, macAddrRaw);
 
-    // only add interfaces with non-zero mac addresses
-    if (macAddrRaw[0] || macAddrRaw[1] || macAddrRaw[2] || macAddrRaw[3] || macAddrRaw[4] || macAddrRaw[5])
-      // Add the interface.
-      m_interfaces.push_back(new CNetworkInterfaceIOS(this, cur->ifa_name, macAddrRaw));
+    // Add the interface.
+    m_interfaces.push_back(new CNetworkInterfaceIOS(this, cur->ifa_name, macAddrRaw));
   }
 
   freeifaddrs(list);
